@@ -1,0 +1,10 @@
+#version 400 core
+
+layout (location = 0) in vec3 position;
+
+uniform mat4 lightSpaceMatrix;
+uniform mat4 transformationMatrix;
+
+void main(void) {
+	gl_Position = lightSpaceMatrix * transformationMatrix * vec4(position, 1);
+}
