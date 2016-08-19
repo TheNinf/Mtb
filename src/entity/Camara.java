@@ -4,28 +4,32 @@ import org.lwjgl.glfw.GLFW;
 
 import main.Aplicacion;
 import maths.Vec3;
+import maths.Vector3;
 
 public class Camara {
 
 	private final Vec3 posicion;
+	public Vector3 rotacion;
 
 	public Camara(final Vec3 posicion) {
 		this.posicion = posicion;
+		rotacion = new Vector3();
 	}
 
 	public final void actualizar() {
-		if (Aplicacion.estaTeclaPulsada(GLFW.GLFW_KEY_W)) {
-			posicion.z -= 0.1f;
-		} else if (Aplicacion.estaTeclaPulsada(GLFW.GLFW_KEY_S)) {
-			posicion.z += 0.1f;
-		} else if (Aplicacion.estaTeclaPulsada(GLFW.GLFW_KEY_A)) {
-			posicion.x -= 0.1f;
+		if (Aplicacion.estaTeclaPulsada(GLFW.GLFW_KEY_A)) {
+			rotacion.y -= 1f;
 		} else if (Aplicacion.estaTeclaPulsada(GLFW.GLFW_KEY_D)) {
-			posicion.x += 0.1f;
-		} else if (Aplicacion.estaTeclaPulsada(GLFW.GLFW_KEY_UP)) {
-			posicion.y += 0.1f;
-		} else if (Aplicacion.estaTeclaPulsada(GLFW.GLFW_KEY_DOWN)) {
-			posicion.y -= 0.1f;
+			rotacion.y += 1f;
+		}
+
+		if (Aplicacion.estaTeclaPulsada(GLFW.GLFW_KEY_W)) {
+			posicion.x += Math.sin(Math.toRadians(rotacion.y));
+			posicion.z -= Math.cos(Math.toRadians(rotacion.y));
+		}
+		if (Aplicacion.estaTeclaPulsada(GLFW.GLFW_KEY_S)) {
+			posicion.x -= Math.sin(Math.toRadians(rotacion.y));
+			posicion.z += Math.cos(Math.toRadians(rotacion.y));
 		}
 	}
 

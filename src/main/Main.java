@@ -46,7 +46,7 @@ public class Main extends Aplicacion {
 		renderizador = new Renderizador3D();
 		final Modelo modelo = new Modelo(m.obtenerVertices(), m.obtenerNormals(), m.obtenerTextureCoords(),
 				m.obtenerTangentes(), m.obtenerBitangentes(), m.obtenerIndices(), new Textura("src/crate.png"))
-						.ponerBrillo(10).ponerTexturaReflejo(new Textura("src/crateSpecular.png"))
+						.ponerBrillo(9).ponerTexturaReflejo(new Textura("src/crateSpecular.png"))
 						.ponerNormalMap(new Textura("src/crateNormalMap.png"));
 
 		entidad = new Entidad(modelo, new Vec3(-5, 1, -10), new Vec3(0, 0, 0), 0.01f);
@@ -152,7 +152,7 @@ public class Main extends Aplicacion {
 		camara.actualizar();
 		renderizador.mostrar(camara);
 
-		// PostProceso.renderizar(renderizador.obtenerFramebuffer());
+		PostProceso.renderizar(renderizador.obtenerFramebuffer());
 		capa.iniciar();
 		capa.render();
 		capa.terminar();

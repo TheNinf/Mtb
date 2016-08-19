@@ -3,7 +3,8 @@ package main;
 import audio.GestorOpenAL;
 import graphics.Ventana;
 import graphics.g2d.fonts.GestorFuentes;
-import utils.PoolObjetos;
+import maths.Vec2;
+import utils.PoolObjeto;
 
 public abstract class Aplicacion {
 
@@ -58,7 +59,7 @@ public abstract class Aplicacion {
 
 			if (System.nanoTime() - contador >= 1000000000L) {
 				tick();
-				PoolObjetos.actualizar();
+				PoolObjeto.actualizarPools();
 
 				contador = System.nanoTime();
 				this.fps = fps;
@@ -81,6 +82,10 @@ public abstract class Aplicacion {
 
 	public void agregarFuentesPersonalizadas() {
 
+	}
+
+	public static final Vec2 posicionRaton() {
+		return ventana.obtenerPosicionRaton();
 	}
 
 	public static final boolean estaTeclaPulsada(final int tecla) {

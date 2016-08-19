@@ -48,10 +48,10 @@ void main(void){
 	 }
 		
 	//halo
-	vec2 haloVector = direction * haloWidth;
-	float weight = length(center - fract(texcoord + haloVector)) / length(center);
-	weight = pow(1f - weight, 5);
-	result += textureDistorted(samplerTexture, texcoord + haloVector, direction, distortion) * weight;
+	//vec2 haloVector = direction * haloWidth;
+	//float weight = length(center - fract(texcoord + haloVector)) / length(center);
+	//weight = pow(1f - weight, 5);
+	//result += textureDistorted(samplerTexture, texcoord + haloVector, direction, distortion) * weight;
 		
 	result *= texture(lensColor, vec2(length(center - texcoord) / length(center), 0)) * 6.34f;
 

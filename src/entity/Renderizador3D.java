@@ -10,10 +10,11 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 import graphics.Shader;
-import graphics.postProcessingFX.Framebuffer;
+import graphics.framebuffer.Framebuffer;
+import graphics.framebuffer.FramebufferSombras;
 import maths.Mat4;
 import maths.Vec3;
-import utils.PoolObjetos;
+import utils.PoolObjeto;
 
 public class Renderizador3D {
 	// TODO hacer qye solocse rendericen con normal map entidades cercanas
@@ -22,10 +23,11 @@ public class Renderizador3D {
 	private Shader shader;
 	private Mat4 proyeccion;
 
-	private Framebuffer shadow;
+	private FramebufferSombras shadow;
 	private Shader shadowShader;
 	private Mat4 ortho;
 	Mat4 lightSpaceMatrix;
+	float rot = 0;
 
 	private Framebuffer buffer = new Framebuffer(1280, 720, Framebuffer.Tipo.DEPTH_Y_TEXTURAS, 2);
 
@@ -34,10 +36,10 @@ public class Renderizador3D {
 		shader = new Shader("src/shaders/entity.vert", "src/shaders/entity.frag");
 		proyeccion = Mat4.perspectiva(70, 1280f / 720f, 0.1f, 1000);
 
-		ortho = Mat4.ortografico(-30, 30, -30, 30, -8f, 100f);
+		ortho = Mat4.ortografico(-30, 30, -30, 30, 0.1f, 100f);
 		// Mat4 lightSpaceMatrix = ortho.multiplicar(crearLightViewMatrix(new
 		// Vec3(0, 0, -1)));
-		lightSpaceMatrix = ortho.multiplicar(crearLightViewMatrix(new Vec3(0, -1000, -1000)));
+		lightSpaceMatrix = ortho.multiplicar(crearLightViewMatrix(new Vec3(0, 0, 1000)));
 
 		shader.enlazar();
 		shader.uniformMat4("projectionMatrix", proyeccion);
@@ -48,7 +50,7 @@ public class Renderizador3D {
 		shader.uniformMat4("lightSpaceMatrix", lightSpaceMatrix);
 		shader.desenlazar();
 
-		shadow = new Framebuffer(1024, 1024, Framebuffer.Tipo.SOLO_DEPTH);
+		shadow = new FramebufferSombras(1024, 1024);
 		shadowShader = new Shader("src/entity/shadow.vert", "src/entity/shadow.frag");
 		shadowShader.enlazar();
 		shadowShader.uniformMat4("lightSpaceMatrix", lightSpaceMatrix);
@@ -64,7 +66,7 @@ public class Renderizador3D {
 		// float yaw = (float) Math.toDegrees((float) Math.atan(direccion.x /
 		// direccion.z));
 		// yaw = direccion.z > 0 ? yaw - 180 : yaw;
-		// lightViewM.multiplicar(Mat4.rotar(yaw, 0, 1, 0));
+		// lightViewM.multiplicar(Mat4.rotar(yaw, 1, 0, 0));
 		// lightViewM.multiplicar(Mat4.trasladar(new Vec3(0)));
 		Vec3 xaxis = new Vec3(0, 1, 0).cross(direccion);
 		xaxis.normalizar();
@@ -100,14 +102,11 @@ public class Renderizador3D {
 		GL11.glCullFace(GL11.GL_FRONT);
 		shadow.enlazar();
 		shadowShader.enlazar();
-		final Vec3 cam = camara.obtenerPosicion();
-
-		ortho = Mat4.ortografico(-30, 30, -30, 30, .1f, 100f);
-		lightSpaceMatrix = ortho.multiplicar((Mat4.trasladar(new Vec3(-cam.x, -cam.y, -cam.z)))
-				.multiplicar(crearLightViewMatrix(new Vec3(0, -1000, -1000))));
-
-		shadowShader.uniformMat4("lightSpaceMatrix", lightSpaceMatrix);
-		final Vec3 vecReusable = PoolObjetos.solicitar(Vec3.class);
+		ortho = Mat4.ortografico(-40, 40, -40, 40, 0.1f, 100f);
+		lightSpaceMatrix = ortho.multiplicar(crearLightViewMatrix(new Vec3(0, 0, 1000)));
+		shadowShader.uniformMat4("lightSpaceMatrix", lightSpaceMatrix.multiplicar(Mat4.trasladar(
+				new Vec3(-camara.obtenerPosicion().x, -camara.obtenerPosicion().y, -camara.obtenerPosicion().z))));
+		final Vec3 vecReusable = PoolObjeto.VEC3.solicitar();
 
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 
@@ -138,7 +137,7 @@ public class Renderizador3D {
 			GL30.glBindVertexArray(0);
 		}
 
-		PoolObjetos.liberar(vecReusable);
+		PoolObjeto.VEC3.devolver(vecReusable);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		shadowShader.desenlazar();
 		shadow.desenlazar();
@@ -150,16 +149,17 @@ public class Renderizador3D {
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glCullFace(GL11.GL_BACK);
 
-		// buffer.enlazar();
+		buffer.enlazar();
 		shader.enlazar();
+		shader.uniformMat4("lightSpaceMatrix", lightSpaceMatrix);
 		GL13.glActiveTexture(GL13.GL_TEXTURE3);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, shadow.obtenerDepth());
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		shader.uniformMat4("lightSpaceMatrix", lightSpaceMatrix);
-		final Vec3 vecReusable = PoolObjetos.solicitar(Vec3.class);
+		final Vec3 vecReusable = PoolObjeto.VEC3.solicitar();
 		final Vec3 posicionCamara = camara.obtenerPosicion();
 		vecReusable.xyz(-posicionCamara.x, -posicionCamara.y, -posicionCamara.z);
-		Mat4 transformacion = Mat4.trasladar(vecReusable);
+		Mat4 transformacion = Mat4.rotar(camara.rotacion.y, 0, 1, 0);
+		transformacion.multiplicar(Mat4.trasladar(vecReusable));
 		shader.uniformMat4("viewMatrix", transformacion);
 
 		for (final Modelo modelo : entidades.keySet()) {
@@ -205,11 +205,11 @@ public class Renderizador3D {
 			GL30.glBindVertexArray(0);
 		}
 
-		PoolObjetos.liberar(vecReusable);
+		PoolObjeto.VEC3.devolver(vecReusable);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		shader.desenlazar();
-		// buffer.desenlazar();
+		buffer.desenlazar();
 	}
 
 	public int obtenerShadowTexture() {

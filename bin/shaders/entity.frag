@@ -20,13 +20,13 @@ const float minDiffuse = 0.4f;
 
 float shadowCalculation(vec4 posLightSpace){
 	//vec3 projCoords = posLightSpace.xyz / posLightSpace.w;
-	vec3 projCoords = posLightSpace.xyz / 2 + 0.5f;
+	vec3 projCoords = posLightSpace.xyz / 2f + 0.5f;
 	if(projCoords.z > 1.0f)
 		return 1.0f;
 	
 	vec2 texelSize = 1.0f / textureSize(shadowMap, 0);
 	float shadow = 0;
-	float bias = 0.05;  
+	float bias = 0.005f;
 	
 	for(int x = -1; x <= 1; x++) {
 		for(int y = -1; y <= 1; y++) {
@@ -34,7 +34,7 @@ float shadowCalculation(vec4 posLightSpace){
 		}
 	}
 
-	return shadow / 9.0f;
+	return (shadow / 9.0f);
 }
 
 void main(void){
@@ -51,18 +51,20 @@ void main(void){
 	float shadow = shadowCalculation(worldPositionLightSpace);
 	float diffuse = max(dot(unitNormal, -lightDirection) * shadow, minDiffuse);
 
-	if(shininess > 0 && diffuse > minDiffuse) {
-		float specularFactor = texture(specularTexture, textureCoords).r;
+	float specularFactor = texture(specularTexture, textureCoords).r;
+	if(shininess > 0.0f && specularFactor > 0.0f) {
 		vec3 unitCamVector = normalize(toCameraVector - fragmentPosition);
 		vec3 halfwayDirection = normalize(-lightDirection + unitCamVector);
 		float specular = pow(dot(unitNormal, halfwayDirection), shininess) * specularFactor; 
 		
-		brightColor = vec4(textureColor.xyz + (specular * shadow), textureColor.a);
+		vec3 finalColor = diffuse * textureColor.xyz + (specular * diffuse);
+		brightColor = vec4(finalColor, textureColor.a);
 		
-		color.xyz = diffuse * textureColor.xyz + (specular * shadow);
+		color.xyz = finalColor;
 		color.a = textureColor.a;
 	} else {
 		color.xyz = diffuse * textureColor.xyz;
 		color.a = textureColor.a;
 	}
+	color.xyz = vec3(shadow, shadow, shadow);
 }

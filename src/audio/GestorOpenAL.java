@@ -12,7 +12,6 @@ import org.lwjgl.openal.ALC10;
 import org.lwjgl.openal.ALCCapabilities;
 
 import maths.Vec3;
-import utils.PoolObjetos;
 
 public class GestorOpenAL {
 
@@ -37,9 +36,7 @@ public class GestorOpenAL {
 		ALC10.alcMakeContextCurrent(contexto);
 		AL.createCapabilities(capacidadesServicio);
 
-		Vec3 posicion = PoolObjetos.solicitar(Vec3.class);
-		ponerPosicionJugador(posicion);
-		PoolObjetos.liberar(posicion);
+		ponerPosicionJugador(new Vec3());
 	}
 
 	public static final void ponerPosicionJugador(final Vec3 posicion) {

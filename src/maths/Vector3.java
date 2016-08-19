@@ -9,39 +9,27 @@ public class Vector3 {
 	}
 
 	public Vector3() {
-		this(0, 0, 0);
+		set(0, 0, 0);
 	}
 
 	public static final Vector3 sumar(final Vector3 derecha, final Vector3 izquierda, final Vector3 destino) {
-		if (destino == null)
-			return new Vector3(derecha.x + izquierda.x, derecha.y + izquierda.y, +derecha.z + izquierda.z);
-
-		destino.set(derecha.x + izquierda.x, derecha.y + izquierda.y, derecha.z + izquierda.z);
-		return destino;
+		final float x = derecha.x + izquierda.x, y = derecha.y + izquierda.y, z = derecha.z + izquierda.z;
+		return destino == null ? new Vector3(x, y, z) : destino.set(x, y, z);
 	}
 
 	public static final Vector3 restar(final Vector3 derecha, final Vector3 izquierda, final Vector3 destino) {
-		if (destino == null)
-			return new Vector3(derecha.x - izquierda.x, derecha.y - izquierda.y, derecha.z - izquierda.z);
-
-		destino.set(derecha.x - izquierda.x, derecha.y - izquierda.y, derecha.z - izquierda.z);
-		return destino;
+		final float x = derecha.x - izquierda.x, y = derecha.y - izquierda.y, z = derecha.z - izquierda.z;
+		return destino == null ? new Vector3(x, y, z) : destino.set(x, y, z);
 	}
 
 	public static final Vector3 multiplicar(final Vector3 derecha, final Vector3 izquierda, final Vector3 destino) {
-		if (destino == null)
-			return new Vector3(derecha.x * izquierda.x, derecha.y * izquierda.y, derecha.z * izquierda.z);
-
-		destino.set(derecha.x * izquierda.x, derecha.y * izquierda.y, derecha.z * izquierda.z);
-		return destino;
+		final float x = derecha.x * izquierda.x, y = derecha.y * izquierda.y, z = derecha.z * izquierda.z;
+		return destino == null ? new Vector3(x, y, z) : destino.set(x, y, z);
 	}
 
 	public static final Vector3 dividir(final Vector3 derecha, final Vector3 izquierda, final Vector3 destino) {
-		if (destino == null)
-			return new Vector3(derecha.x / izquierda.x, derecha.y / izquierda.y, derecha.z / izquierda.z);
-
-		destino.set(derecha.x / izquierda.x, derecha.y / izquierda.y, derecha.z / izquierda.z);
-		return destino;
+		final float x = derecha.x / izquierda.x, y = derecha.y / izquierda.y, z = derecha.z / izquierda.z;
+		return destino == null ? new Vector3(x, y, z) : destino.set(x, y, z);
 	}
 
 	public static final Vector3 cross(final Vector3 derecha, final Vector3 izquierda) {
@@ -63,10 +51,11 @@ public class Vector3 {
 		return this;
 	}
 
-	public final void set(final float x, final float y, final float z) {
+	public final Vector3 set(final float x, final float y, final float z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
+		return this;
 	}
 
 	public final float longitud() {
@@ -75,5 +64,10 @@ public class Vector3 {
 
 	private final float obtenerModulo() {
 		return (float) Math.sqrt(x * x + y * y + z * z);
+	}
+
+	@Override
+	public final String toString() {
+		return "x: " + x + ", y: " + y + ", z: " + z;
 	}
 }

@@ -18,7 +18,7 @@ import graphics.g2d.fonts.Letra;
 import maths.Vec2;
 import maths.Vec3;
 import maths.Vec4;
-import utils.PoolObjetos;
+import utils.PoolObjeto;
 
 public class RenderizadorAvanzado2D extends Renderizador2D {
 
@@ -127,7 +127,7 @@ public class RenderizadorAvanzado2D extends Renderizador2D {
 		final Vec4 color = label.color;
 
 		float x = posicion.x;
-		final Vec3 vecAMul = PoolObjetos.solicitar(Vec3.class);
+		final Vec3 vecAMul = PoolObjeto.VEC3.solicitar();
 
 		final short longitud = (short) texto.length();
 		final boolean perteneAGrupo = label.perteneceAGrupo;
@@ -208,7 +208,7 @@ public class RenderizadorAvanzado2D extends Renderizador2D {
 			x += letra.ancho / escaladoX;
 			verticesARenderizar += 6;
 		}
-		PoolObjetos.liberar(vecAMul);
+		PoolObjeto.VEC3.devolver(vecAMul);
 	}
 
 	@Override
@@ -242,7 +242,7 @@ public class RenderizadorAvanzado2D extends Renderizador2D {
 			}
 		}
 
-		final Vec3 vectorReusable = PoolObjetos.solicitar(Vec3.class);
+		final Vec3 vectorReusable = PoolObjeto.VEC3.solicitar();
 
 		if (!renderizable.perteneceAGrupo) {
 			buffer.put(posicion.x).put(posicion.y).put(posicion.z);
@@ -296,7 +296,7 @@ public class RenderizadorAvanzado2D extends Renderizador2D {
 			buffer.put(ts);
 		}
 
-		PoolObjetos.liberar(vectorReusable);
+		PoolObjeto.VEC3.devolver(vectorReusable);
 		verticesARenderizar += 6;
 	}
 

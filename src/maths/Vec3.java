@@ -121,4 +121,5 @@ public class Vec3 {
 		final Vec3 cast = (Vec3) objeto;
 		return this.x == cast.x && this.y == cast.y && this.z == cast.z;
 	}
+
 }

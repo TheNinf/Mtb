@@ -9,6 +9,8 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
+import graphics.framebuffer.Framebuffer;
+
 public abstract class PostProceso {
 
 	private static final float[] posiciones = { -1, 1, -1, -1, 1, 1, 1, -1 };

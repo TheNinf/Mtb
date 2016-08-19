@@ -19,7 +19,8 @@ out vec4 worldPositionLightSpace;
 
 void main(void){
 	vec4 worldPosition = transformationMatrix * vec4(position, 1);
-	gl_Position = projectionMatrix * viewMatrix * worldPosition;
+	vec4 positionRelativeToCamera = viewMatrix * worldPosition;
+	gl_Position = projectionMatrix * positionRelativeToCamera;
 	textureCoords = textCoords;
 
 	vec3 normal = normalize((transformationMatrix * vec4(normals, 0)).xyz);
