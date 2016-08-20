@@ -2,15 +2,20 @@ package graphics;
 
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
+import java.nio.IntBuffer;
 
 import javax.imageio.ImageIO;
 
-import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL14;
 
 public class Textura {
+
+	public enum TIPO {
+		TEXTURA_3D, TEXTURA_SPRITE
+	}
 
 	private int ancho, alto;
 	private int id;
@@ -19,148 +24,78 @@ public class Textura {
 		id = texturaID;
 	}
 
-	public Textura(final String ruta) {
-		id = leerTextura(ruta);
+	public Textura(final String ruta, final TIPO tipo) {
+		id = leerTextura(ruta, tipo);
 	}
 
-	public Textura(final String ruta, boolean d1) {
-		id = !d1 ? leerTextura(ruta) : leerTextura1D(ruta);
+	public Textura(final BufferedImage imagen, final TIPO tipo) {
+		id = leerTextura(imagen, tipo);
 	}
 
-	public Textura(final BufferedImage imagen) {
-		id = leerTextura(imagen);
-	}
-
-	private int leerTextura(final BufferedImage imagen) {
+	private final int leerTextura(final BufferedImage imagen, final TIPO tipo) {
 		ancho = imagen.getWidth();
 		alto = imagen.getHeight();
 
-		final int[] pixeles = new int[ancho * alto];
-		imagen.getRGB(0, 0, ancho, alto, pixeles, 0, ancho);
-
-		int[] data = new int[pixeles.length];
-		for (int i = 0; i < pixeles.length; i++) {
-			int color = pixeles[i];
-			int alpha = (color & 0xff000000) >> 24;
-			int rojo = (color & 0xff0000) >> 16;
-			int verde = (color & 0xff00) >> 8;
-			int azul = (color & 0xff);
-
-			data[i] = alpha << 24 | azul << 16 | verde << 8 | rojo;
-		}
-
 		int texturaID = GL11.glGenTextures();
+
+		final int grandaria = ancho * alto;
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texturaID);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+
+		if (tipo == TIPO.TEXTURA_3D) {
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, GL11.GL_TRUE);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+		} else {
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+		}
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, ancho, alto, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE,
-				data);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
-		data = null;
+		// GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, ancho, alto,
+		// 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE,
+		// data);
+		final IntBuffer buffer = BufferUtils.createIntBuffer(grandaria);
+
+		buffer.rewind();
+		buffer.put(imagen.getRGB(0, 0, ancho, alto, null, 0, ancho), 0, grandaria);
+		buffer.rewind();
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, ancho, alto, 0, GL12.GL_BGRA,
+				GL12.GL_UNSIGNED_INT_8_8_8_8_REV, buffer);
+		desenlazar();
 
 		return texturaID;
 	}
 
-	private int leerTextura(final String ruta) {
-		int[] pixeles = null;
+	private int leerTextura(final String ruta, final TIPO tipo) {
+		BufferedImage imagen = null;
 		try {
-			BufferedImage imagen = ImageIO.read(new FileInputStream(ruta));
-			ancho = imagen.getWidth();
-			alto = imagen.getHeight();
-			pixeles = new int[ancho * alto];
-			imagen.getRGB(0, 0, ancho, alto, pixeles, 0, ancho);
-			imagen = null;
+			imagen = ImageIO.read(new FileInputStream(ruta));
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 
-		int[] data = new int[ancho * alto];
-		for (int i = 0; i < pixeles.length; i++) {
-			int color = pixeles[i];
-			int alpha = (color & 0xff000000) >> 24;
-			int rojo = (color & 0xff0000) >> 16;
-			int verde = (color & 0xff00) >> 8;
-			int azul = (color & 0xff);
-
-			data[i] = alpha << 24 | azul << 16 | verde << 8 | rojo;
-		}
-
-		int texturaID = GL11.glGenTextures();
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texturaID);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, GL11.GL_TRUE);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
-		final float amount = Math.min(4f,
-				GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
-		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, amount);
-
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, ancho, alto, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE,
-				data);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
-		data = pixeles = null;
-
-		return texturaID;
-	}
-
-	public int leerTextura1D(final String ruta) {
-		int[] pixeles = null;
-		try {
-			BufferedImage imagen = ImageIO.read(new FileInputStream(ruta));
-			ancho = imagen.getWidth();
-			alto = 0;
-			pixeles = new int[ancho];
-			imagen.getRGB(0, 0, ancho, 0, pixeles, 0, ancho);
-			imagen = null;
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
-
-		int[] data = new int[ancho];
-		for (int i = 0; i < pixeles.length; i++) {
-			int color = pixeles[i];
-			int alpha = (color & 0xff000000) >> 24;
-			int rojo = (color & 0xff0000) >> 16;
-			int verde = (color & 0xff00) >> 8;
-			int azul = (color & 0xff);
-
-			data[i] = alpha << 24 | azul << 16 | verde << 8 | rojo;
-		}
-
-		int texturaID = GL11.glGenTextures();
-		GL11.glBindTexture(GL11.GL_TEXTURE_1D, texturaID);
-		GL11.glTexImage1D(GL11.GL_TEXTURE_1D, 0, GL11.GL_RGBA, ancho, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, data);
-		GL11.glBindTexture(GL11.GL_TEXTURE_1D, 0);
-		data = pixeles = null;
-
-		return texturaID;
+		return leerTextura(imagen, tipo);
 	}
 
 	public final void actualizarTextura(final BufferedImage imagen) {
 		ancho = imagen.getWidth();
 		alto = imagen.getHeight();
 
-		final int[] pixeles = new int[ancho * alto];
-		imagen.getRGB(0, 0, ancho, alto, pixeles, 0, ancho);
+		final int grandaria = ancho * alto;
+		final IntBuffer buffer = BufferUtils.createIntBuffer(grandaria);
 
-		int[] data = new int[pixeles.length];
-		for (int i = 0; i < pixeles.length; i++) {
-			int color = pixeles[i];
-			int alpha = (color & 0xff000000) >> 24;
-			int rojo = (color & 0xff0000) >> 16;
-			int verde = (color & 0xff00) >> 8;
-			int azul = (color & 0xff);
-
-			data[i] = alpha << 24 | azul << 16 | verde << 8 | rojo;
-		}
+		buffer.rewind();
+		buffer.put(imagen.getRGB(0, 0, ancho, alto, null, 0, ancho), 0, grandaria);
+		buffer.rewind();
 		enlazar();
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, ancho, alto, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE,
-				data);
-		GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, ancho, alto, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, data);
+		GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, ancho, alto, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV,
+				buffer);
 		desenlazar();
+	}
+
+	@Override
+	protected final void finalize() {
+		GL11.glDeleteTextures(id);
 	}
 
 	public final void enlazar() {

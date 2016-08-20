@@ -29,7 +29,7 @@ public class Renderizador3D {
 	Mat4 lightSpaceMatrix;
 	float rot = 0;
 
-	private Framebuffer buffer = new Framebuffer(1280, 720, Framebuffer.Tipo.DEPTH_Y_TEXTURAS, 2);
+	private Framebuffer buffer = new Framebuffer(1280, 720, Framebuffer.TIPO.DEPTH_Y_TEXTURAS, 2);
 
 	public Renderizador3D() {
 		entidades = new HashMap<>();

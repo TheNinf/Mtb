@@ -9,7 +9,7 @@ import org.lwjgl.opengl.GL30;
 public final class FramebufferSombras extends Framebuffer {
 
 	public FramebufferSombras(final int ancho, final int alto) {
-		super(ancho, alto, Framebuffer.Tipo.SOLO_DEPTH, 0);
+		super(ancho, alto, TIPO.SOLO_DEPTH, 0);
 	}
 
 	@Override

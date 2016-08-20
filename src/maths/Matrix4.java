@@ -147,11 +147,13 @@ public class Matrix4 {
 
 		float suma = 0.0f;
 		for (byte y = 0; y < 4; y++) {
+			final int y1 = (y << 1);
+
 			for (byte x = 0; x < 4; x++) {
 				for (byte e = 0; e < 4; e++) {
-					suma += src.elementos[x + e * 4] * otra.elementos[e + y * 4];
+					suma += src.elementos[x + (e << 1)] * otra.elementos[e + y1];
 				}
-				datos[x + y * 4] = suma;
+				datos[x + y1] = suma;
 				suma = 0;
 			}
 		}
@@ -173,6 +175,7 @@ public class Matrix4 {
 				+ src.elementos[m13];
 		final float z = src.elementos[m20] * vector.x + src.elementos[m21] * vector.y + src.elementos[m22] * vector.z
 				+ src.elementos[m23];
+
 		if (destino == null)
 			return new Vector3(x, y, z);
 

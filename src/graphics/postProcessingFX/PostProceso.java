@@ -23,7 +23,7 @@ public abstract class PostProceso {
 	public PostProceso(final int ancho, final int alto) {
 		this.ancho = ancho;
 		this.alto = alto;
-		framebuffer = new Framebuffer(ancho, alto, Framebuffer.Tipo.SOLO_TEXTURAS);
+		framebuffer = new Framebuffer(ancho, alto, Framebuffer.TIPO.SOLO_TEXTURAS);
 	}
 
 	public static final void iniciar() {

@@ -1,7 +1,5 @@
 package main;
 
-import java.util.Random;
-
 import org.lwjgl.opengl.GL11;
 
 import audio.GestorSonidos;
@@ -11,7 +9,6 @@ import entity.Modelo;
 import entity.Renderizador3D;
 import graphics.Shader;
 import graphics.Textura;
-import graphics.g2d.Sprite;
 import graphics.g2d.fonts.GestorFuentes;
 import graphics.g2d.fonts.Label;
 import graphics.layer.CapaTiles;
@@ -23,12 +20,16 @@ import maths.Vec3;
 import maths.Vec4;
 
 public class Main extends Aplicacion {
-	// TODO reescribir texturas. NormalMap no funciona bien con mipmap
+
 	private final Label label;
 	private final CapaTiles capa;
 	private final Camara camara;
 	Renderizador3D renderizador;
 	Entidad entidad;
+
+	static {
+		System.out.println(2 << 1);
+	}
 
 	protected Main() {
 		label = new Label("Hola", -16, 9, GestorFuentes.obtener("Source Sans Pro"), new Vec4(0, 0, 0, 1),
@@ -41,13 +42,14 @@ public class Main extends Aplicacion {
 		shader.desenlazar();
 
 		capa.agregar(label);
-		// TODO Auto-generated constructor stub
+
 		ModeloMTB m = LectorArchivosMTB.leerObjetoMTB("src/resultado.mtb");
 		renderizador = new Renderizador3D();
 		final Modelo modelo = new Modelo(m.obtenerVertices(), m.obtenerNormals(), m.obtenerTextureCoords(),
-				m.obtenerTangentes(), m.obtenerBitangentes(), m.obtenerIndices(), new Textura("src/crate.png"))
-						.ponerBrillo(9).ponerTexturaReflejo(new Textura("src/crateSpecular.png"))
-						.ponerNormalMap(new Textura("src/crateNormalMap.png"));
+				m.obtenerTangentes(), m.obtenerBitangentes(), m.obtenerIndices(),
+				new Textura("src/crate.png", Textura.TIPO.TEXTURA_3D)).ponerBrillo(9)
+						.ponerTexturaReflejo(new Textura("src/crateSpecular.png", Textura.TIPO.TEXTURA_3D))
+						.ponerNormalMap(new Textura("src/crateNormalMap.png", Textura.TIPO.TEXTURA_3D));
 
 		entidad = new Entidad(modelo, new Vec3(-5, 1, -10), new Vec3(0, 0, 0), 0.01f);
 		Entidad entidad2 = new Entidad(modelo, new Vec3(-5, 0, -5), new Vec3(90, 0, 0), 0.01f);
@@ -55,14 +57,15 @@ public class Main extends Aplicacion {
 		renderizador.agregar(entidad);
 		renderizador.agregar(entidad2);
 
-		Random r = new Random();
-		for (int i = 0; i < 1000; i++) {
-			// renderizador.agregar(
-			// new Entidad(modelo, new Vec3(r.nextFloat() * 60 - 30,
-			// r.nextFloat() * 60, r.nextFloat() * -60),
-			// new Vec3(0, 0, 180), 0.01f));
-		}
-		capa.agregar(new Sprite(-16, 9, 8, 8, renderizador.obtenerShadowTexture()));
+		// Random r = new Random();
+		// for (int i = 0; i < 1000; i++) {
+		// // renderizador.agregar(
+		// // new Entidad(modelo, new Vec3(r.nextFloat() * 60 - 30,
+		// // r.nextFloat() * 60, r.nextFloat() * -60),
+		// // new Vec3(0, 0, 180), 0.01f));
+		// }
+		// capa.agregar(new Sprite(-16, 9, 8, 8,
+		// renderizador.obtenerShadowTexture()));
 
 		GL11.glClearColor(0, 0.5f, 0.9f, 1);
 		GestorSonidos.obtener("test").sonar();

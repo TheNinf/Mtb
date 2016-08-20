@@ -13,7 +13,7 @@ import utils.exceptions.FramebufferException;
 
 public class Framebuffer {
 
-	public enum Tipo {
+	public enum TIPO {
 		SOLO_DEPTH, SOLO_TEXTURAS, DEPTH_Y_TEXTURAS
 	}
 
@@ -25,13 +25,15 @@ public class Framebuffer {
 
 	private int clearMask;
 
-	public Framebuffer(int ancho, int alto, Tipo tipo) throws FramebufferException {
+	public Framebuffer(final int ancho, final int alto, final TIPO tipo) throws FramebufferException {
 		this(ancho, alto, tipo, 1);
 	}
 
-	public Framebuffer(int ancho, int alto, Tipo tipo, int numTexturas) throws FramebufferException {
-		if (tipo != Tipo.SOLO_DEPTH && numTexturas <= 0)
-			throw new FramebufferException("No se puede crear un Framebuffer con 0 texturas.");
+	public Framebuffer(final int ancho, final int alto, final TIPO tipo, final int numTexturas)
+			throws FramebufferException {
+		if (tipo != TIPO.SOLO_DEPTH && numTexturas <= 0)
+			throw new FramebufferException(
+					"No se puede crear un Framebuffer que no sirva solamente para guardar la información de la profundidad con 0 texturas.");
 
 		this.ancho = ancho;
 		this.alto = alto;
@@ -72,7 +74,7 @@ public class Framebuffer {
 		GL11.glViewport(0, 0, Aplicacion.obtenerAncho(), Aplicacion.obtenerAlto());
 	}
 
-	private final void crear(Tipo tipo, int numeroTexturas) {
+	private final void crear(final TIPO tipo, final int numeroTexturas) {
 		framebufferID = GL30.glGenFramebuffers();
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, framebufferID);
 
@@ -94,7 +96,7 @@ public class Framebuffer {
 	}
 
 	private void determinarTexturas(final int numTexturas) {
-		if (numTexturas == 0) {
+		if (numTexturas <= 0) {
 			GL20.glDrawBuffers(GL11.GL_NONE);
 			return;
 		}
@@ -110,10 +112,10 @@ public class Framebuffer {
 
 	private final void comprobarFramebuffer() throws FramebufferException {
 		if (GL30.glCheckFramebufferStatus(GL30.GL_FRAMEBUFFER) != GL30.GL_FRAMEBUFFER_COMPLETE)
-			throw new FramebufferException("No se ha podido crear el Framebuffer.");
+			throw new FramebufferException("No se ha podido crear correctamente el Framebuffer.");
 	}
 
-	protected final int crearTextura(int attachment) {
+	protected final int crearTextura(final int attachment) {
 		int textura = GL11.glGenTextures();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textura);
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, ancho, alto, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE,
@@ -151,7 +153,7 @@ public class Framebuffer {
 	 */
 	public final int obtenerAttachment(final int attachment) throws FramebufferException {
 		final int unidadTextura = attachment - GL30.GL_COLOR_ATTACHMENT0;
-		if (texturas == null | unidadTextura < 0 | unidadTextura > texturas.length - 1)
+		if (texturas == null || unidadTextura < 0 || unidadTextura > texturas.length - 1)
 			throw new FramebufferException("Se ha intentado acceder a una unidad de textura que no existe.");
 
 		return texturas[unidadTextura];
@@ -170,5 +172,11 @@ public class Framebuffer {
 					"Se ha intentado acceder a la textura de profundidad cuando ésta no ha sido creada.");
 
 		return depth;
+	}
+
+	@Override
+	protected final void finalize() {
+		GL30.glDeleteFramebuffers(framebufferID);
+		texturas = null;
 	}
 }

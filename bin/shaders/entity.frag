@@ -40,13 +40,12 @@ float shadowCalculation(vec4 posLightSpace){
 void main(void){
 	vec4 textureColor = texture(samplerTexture, textureCoords);
 	if(textureColor.a == 0){
-		color = vec4(0);
+		color = brightColor = vec4(0);
 		return;
 	}
 	
 	vec4 normalMapValue = 2.0f * texture(normalMap, textureCoords) - 1.0f;
 	vec3 unitNormal = normalize(normalMapValue.rgb);
-	brightColor = vec4(0, 0, 0, 1);
 
 	float shadow = shadowCalculation(worldPositionLightSpace);
 	float diffuse = max(dot(unitNormal, -lightDirection) * shadow, minDiffuse);
@@ -58,13 +57,10 @@ void main(void){
 		float specular = pow(dot(unitNormal, halfwayDirection), shininess) * specularFactor; 
 		
 		vec3 finalColor = diffuse * textureColor.xyz + (specular * diffuse);
-		brightColor = vec4(finalColor, textureColor.a);
-		
-		color.xyz = finalColor;
-		color.a = textureColor.a;
+		brightColor = color = vec4(finalColor, textureColor.a);
 	} else {
+		brightColor = vec4(0, 0, 0, 1);
 		color.xyz = diffuse * textureColor.xyz;
 		color.a = textureColor.a;
 	}
-	color.xyz = vec3(shadow, shadow, shadow);
 }

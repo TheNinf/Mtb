@@ -26,8 +26,8 @@ public class LensFlare extends PostProceso {
 				"src/graphics/postProcessingFX/lensFlare/blurFragment.txt");
 		hblurShader = new Shader("src/graphics/postProcessingFX/lensFlare/horizontalBlurVertex.txt",
 				"src/graphics/postProcessingFX/lensFlare/blurFragment.txt");
-		texturaDirt = new Textura("src/lensDirt.png");
-		lensColor = new Textura("src/lenscolor.png", false);
+		texturaDirt = new Textura("src/lensDirt.png", Textura.TIPO.TEXTURA_SPRITE);
+		lensColor = new Textura("src/lenscolor.png", Textura.TIPO.TEXTURA_SPRITE);
 
 		shader.enlazar();
 		shader.uniformInt("samplerTexture", 0);

@@ -34,10 +34,7 @@ public class FontAtlas {
 		contadorX = 0;
 
 		imagen = new BufferedImage(ancho, alto, BufferedImage.TYPE_INT_ARGB);
-		for (int x = 0; x < ancho; x++)
-			for (int y = 0; y < alto; y++)
-				imagen.setRGB(x, y, 0x000000);
-		textura = new Textura(imagen);
+		textura = new Textura(imagen, Textura.TIPO.TEXTURA_3D);
 		offsets = new HashMap<>();
 	}
 
