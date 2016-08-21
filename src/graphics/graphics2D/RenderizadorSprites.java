@@ -1,7 +1,6 @@
 package graphics.graphics2D;
 
 import java.nio.FloatBuffer;
-import java.util.Arrays;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -58,7 +57,6 @@ public class RenderizadorSprites extends Renderizador2D {
 	@Override
 	public void comenzar() {
 		spritesARenderizar = 0;
-		buffer.clear();
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, VBO);
 	}
 
@@ -91,11 +89,11 @@ public class RenderizadorSprites extends Renderizador2D {
 					acabar();
 					mostrar();
 					comenzar();
-					Arrays.fill(texturas, 0);
+					for (byte i = 0; i < MAX_TEXTURAS; i++)
+						texturas[i] = 0;
 					tamTexturas = 0;
 				}
-				texturas[tamTexturas] = tid;
-				tamTexturas++;
+				texturas[tamTexturas++] = tid;
 				ts = tamTexturas;
 			}
 		}
@@ -113,7 +111,7 @@ public class RenderizadorSprites extends Renderizador2D {
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 
-		final short grandaria = (short) texturas.length;
+		final byte grandaria = (byte) texturas.length;
 		for (byte i = 0; i < grandaria; i++) {
 			GL13.glActiveTexture(GL13.GL_TEXTURE0 + i);
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, texturas[i]);

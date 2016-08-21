@@ -18,14 +18,16 @@ public class GestorOpenAL {
 	private static long servicio;
 	private static long contexto;
 
-	private static ExecutorService hilo;
+	private static ExecutorService hiloOpenAL;
 
 	private GestorOpenAL() {
 	}
 
 	public static final void iniciar() {
-		hilo = Executors.newSingleThreadExecutor();
-		hilo.execute(() -> iniciarOpenAL());
+		hiloOpenAL = Executors.newSingleThreadExecutor();
+		ejecutar(() -> iniciarOpenAL());
+
+		Sonido.iniciar(hiloOpenAL);
 	}
 
 	private static final void iniciarOpenAL() {
@@ -40,33 +42,25 @@ public class GestorOpenAL {
 	}
 
 	public static final void ponerPosicionJugador(final Vector3 posicion) {
-		hilo.execute(() -> AL10.alListener3f(AL10.AL_POSITION, posicion.x, posicion.y, posicion.z));
+		ejecutar(() -> AL10.alListener3f(AL10.AL_POSITION, posicion.x, posicion.y, posicion.z));
 	}
 
 	public static final void cambiarModeloDistancia(final int modelo) {
-		hilo.execute(() -> AL10.alDistanceModel(modelo));
+		ejecutar(() -> AL10.alDistanceModel(modelo));
 	}
 
-	public static final void sonar(final Sonido sonido) {
-		hilo.execute(() -> AL10.alSourcePlay(sonido.obtenerSource()));
-	}
-
-	public static final void pausar(final Sonido sonido) {
-		hilo.execute(() -> AL10.alSourcePause(sonido.obtenerSource()));
-	}
-
-	public static final void parar(final Sonido sonido) {
-		hilo.execute(() -> AL10.alSourceStop(sonido.obtenerSource()));
+	private static final void ejecutar(final Runnable comando) {
+		hiloOpenAL.execute(comando);
 	}
 
 	public static final void terminar() {
-		hilo.execute(() -> {
-			GestorSonidos.destruir();
+		GestorSonidos.destruir();
+		ejecutar(() -> {
 			ALC10.alcMakeContextCurrent(0);
 			ALC10.alcDestroyContext(contexto);
 			ALC10.alcCloseDevice(servicio);
 		});
-		hilo.shutdown();
+		hiloOpenAL.shutdown();
 	}
 
 }

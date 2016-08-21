@@ -1,38 +1,38 @@
 package audio;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public final class GestorSonidos {
 
-	private static final ArrayList<Sonido> sonidos = new ArrayList<>();
+	private static final HashMap<String, Sonido> sonidos = new HashMap<>();
 
 	private GestorSonidos() {
 	}
 
 	public static final void agregarSonido(final Sonido sonido) {
-		if (!sonidos.contains(sonido))
-			sonidos.add(sonido);
+		if (!sonidos.containsKey(sonido))
+			sonidos.put(sonido.obtenerNombre(), sonido);
 	}
 
 	public static final Sonido obtener(final String nombre) {
-		for (final Sonido sonido : sonidos)
-			if (sonido.obtenerNombre() == nombre)
-				return sonido;
+		Sonido sonido = sonidos.get(nombre);
+		if (sonido != null)
+			return sonido;
 
 		DatosWav datos = DatosWav.leerWavDesdeArchivo(nombre + ".wav");
 		if (datos == null)
 			return null;
 
-		Sonido sonido = new Sonido(nombre, datos);
-		sonidos.add(sonido);
+		sonido = new Sonido(nombre, datos);
+		sonidos.put(nombre, sonido);
 		datos = null;
 
 		return sonido;
 	}
 
 	public static final void destruir() {
-		for (final Sonido sonido : sonidos)
-			sonido.destruir();
+		for (final String nombre : sonidos.keySet())
+			sonidos.get(nombre).destruir();
 		sonidos.clear();
 	}
 

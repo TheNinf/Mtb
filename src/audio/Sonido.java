@@ -1,5 +1,7 @@
 package audio;
 
+import java.util.concurrent.ExecutorService;
+
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
 
@@ -10,15 +12,23 @@ public class Sonido {
 
 	// TODO hacer limpieza de VAOS, VBOS, SONIDOS, FRAMEBUFFERS, TEXTURAS
 	private final String nombre;
+
 	private final int source;
 	private final int buffer;
 	private int modeloDistancia;
+
+	private static ExecutorService hiloOpenAL;
+	private static boolean iniciado = false;
+
+	private boolean sonando;
 
 	public Sonido(final String nombre, final DatosWav datos) {
 		this.nombre = nombre;
 
 		this.source = AL10.alGenSources();
 		this.buffer = AL10.alGenBuffers();
+
+		sonando = false;
 
 		AL10.alBufferData(buffer, datos.formato, datos.datos, datos.frecuencia);
 
@@ -34,22 +44,7 @@ public class Sonido {
 	}
 
 	public Sonido(final String nombre, final String ruta) {
-		// this.nombre = nombre;
-		//
-		// this.source = AL10.alGenSources();
-		// this.buffer = AL10.alGenBuffers();
-
 		this(nombre, DatosWav.leerWavDesdeArchivo(ruta));
-		// AL10.alBufferData(buffer, datos.formato, datos.datos,
-		// datos.frecuencia);
-		// datos = null;
-		//
-		// AL10.alSourcei(source, AL10.AL_BUFFER, buffer);
-		// ponerPosicionSonido(0, 0, 0);
-		// ponerVelocidadSonido(0, 0, 0);
-		//
-		// modeloDistancia = AL11.AL_EXPONENT_DISTANCE;
-		// GestorSonidos.agregarSonido(this);
 	}
 
 	// TODO hacer algo con estas variables
@@ -64,45 +59,55 @@ public class Sonido {
 		GestorSonidos.agregarSonido(this);
 	}
 
+	public static final void iniciar(final ExecutorService hiloOpenAL) {
+		if (!iniciado) {
+			Sonido.hiloOpenAL = hiloOpenAL;
+			iniciado = true;
+		}
+	}
+
 	public final void sonar() {
 		if (estaSonando())
 			return;
 		GestorOpenAL.cambiarModeloDistancia(modeloDistancia);
-		GestorOpenAL.sonar(this);
+		ejecutar(() -> AL10.alSourcePlay(source));
 	}
 
 	public final void parar() {
 		if (estaSonando())
-			GestorOpenAL.parar(this);
+			ejecutar(() -> AL10.alSourceStop(source));
 	}
 
 	public final void pausar() {
 		if (estaSonando())
-			GestorOpenAL.pausar(this);
+			ejecutar(() -> AL10.alSourcePause(source));
 	}
 
 	// TODO supongo que esto no funcionará
 	public final boolean estaSonando() {
-		return AL10.alGetSourcei(source, AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING;
+		ejecutar(() -> {
+			sonando = AL10.alGetSourcei(source, AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING;
+		});
+		return sonando;
 	}
 
 	public final Sonido ponerVolumen(final float volumen) {
-		AL10.alSourcef(source, AL10.AL_GAIN, volumen);
+		ejecutar(() -> AL10.alSourcef(source, AL10.AL_GAIN, volumen));
 		return this;
 	}
 
 	public final Sonido ponerTono(final float tono) {
-		AL10.alSourcef(source, AL10.AL_PITCH, tono);
+		ejecutar(() -> AL10.alSourcef(source, AL10.AL_PITCH, tono));
 		return this;
 	}
 
 	public final Sonido ponerPosicionSonido(final Vector3 posicion) {
-		AL10.alSource3f(source, AL10.AL_POSITION, posicion.x, posicion.y, posicion.z);
+		ejecutar(() -> AL10.alSource3f(source, AL10.AL_POSITION, posicion.x, posicion.y, posicion.z));
 		return this;
 	}
 
 	public final Sonido ponerVelocidadSonido(final Vector3 velocidad) {
-		AL10.alSource3f(source, AL10.AL_VELOCITY, velocidad.x, velocidad.y, velocidad.z);
+		ejecutar(() -> AL10.alSource3f(source, AL10.AL_VELOCITY, velocidad.x, velocidad.y, velocidad.z));
 		return this;
 	}
 
@@ -111,12 +116,13 @@ public class Sonido {
 	}
 
 	public final void destruir() {
-		AL10.alDeleteBuffers(buffer);
-		AL10.alDeleteSources(source);
+		ejecutar(() -> {
+			AL10.alDeleteBuffers(buffer);
+			AL10.alDeleteSources(source);
+		});
 	}
 
-	public final int obtenerSource() {
-		return source;
+	private static final void ejecutar(final Runnable comando) {
+		hiloOpenAL.execute(comando);
 	}
-
 }

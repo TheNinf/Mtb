@@ -1,4 +1,4 @@
-package graphics.graphics2D.framebuffer;
+package graphics.framebuffer;
 
 import java.nio.ByteBuffer;
 

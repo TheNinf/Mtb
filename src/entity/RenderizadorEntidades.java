@@ -12,7 +12,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 import graphics.Shader;
-import graphics.graphics2D.framebuffer.Framebuffer;
+import graphics.framebuffer.Framebuffer;
 import main.Aplicacion;
 import maths.Matrix4;
 import maths.Vector3;

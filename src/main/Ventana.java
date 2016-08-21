@@ -9,7 +9,7 @@ import maths.Vector2;
 
 public class Ventana {
 
-	private final long id;
+	private final long ventanaID;
 	private int ancho;
 	private int alto;
 
@@ -33,17 +33,18 @@ public class Ventana {
 
 		GLFW.glfwDefaultWindowHints();
 		GLFW.glfwWindowHint(GLFW.GLFW_DEPTH_BITS, 24);
+		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GL11.GL_FALSE);
 
-		id = GLFW.glfwCreateWindow(ancho, alto, titulo, 0, 0);
+		ventanaID = GLFW.glfwCreateWindow(ancho, alto, titulo, 0, 0);
 
-		if (id == 0) {
+		if (ventanaID == 0) {
 			terminar();
 			throw new IllegalStateException("No se ha podido crear la ventana!");
 		}
 
-		GLFW.glfwMakeContextCurrent(id);
+		GLFW.glfwMakeContextCurrent(ventanaID);
 		iniciarCallbacks();
-		GLFW.glfwShowWindow(id);
+		GLFW.glfwShowWindow(ventanaID);
 
 		this.ancho = ancho;
 		this.alto = alto;
@@ -51,23 +52,23 @@ public class Ventana {
 	}
 
 	private void iniciarCallbacks() {
-		GLFW.glfwSetWindowSizeCallback(id, (window, width, height) -> {
-			this.ancho = width;
-			this.alto = height;
+		// GLFW.glfwSetWindowSizeCallback(id, (window, width, height) -> {
+		// this.ancho = width;
+		// this.alto = height;
+		//
+		// GL11.glViewport(0, 0, ancho, alto);
+		// });
 
-			GL11.glViewport(0, 0, ancho, alto);
-		});
-
-		GLFW.glfwSetKeyCallback(id, (window, key, scancode, action, mods) -> {
+		GLFW.glfwSetKeyCallback(ventanaID, (window, key, scancode, action, mods) -> {
 			if (key >= 0)
 				teclas[key] = action != GLFW.GLFW_RELEASE;
 		});
 
-		GLFW.glfwSetMouseButtonCallback(id, (window, button, action, mods) -> {
+		GLFW.glfwSetMouseButtonCallback(ventanaID, (window, button, action, mods) -> {
 			botonesRaton[button] = action != GLFW.GLFW_RELEASE;
 		});
 
-		GLFW.glfwSetCursorPosCallback(id, (window, xpos, ypos) -> {
+		GLFW.glfwSetCursorPosCallback(ventanaID, (window, xpos, ypos) -> {
 			posRaton.x = (float) xpos;
 			posRaton.y = (float) ypos;
 		});
@@ -77,7 +78,7 @@ public class Ventana {
 		System.arraycopy(teclas, 0, estadoTeclas, 0, NUM_TECLAS);
 		System.arraycopy(botonesRaton, 0, estadoBotonesRaton, 0, NUM_BOTONES);
 
-		GLFW.glfwSwapBuffers(id);
+		GLFW.glfwSwapBuffers(ventanaID);
 		GLFW.glfwPollEvents();
 
 		final int error = GL11.glGetError();
@@ -103,11 +104,11 @@ public class Ventana {
 	}
 
 	public final boolean debeCerrarse() {
-		return GLFW.glfwWindowShouldClose(id);
+		return GLFW.glfwWindowShouldClose(ventanaID);
 	}
 
 	public final void terminar() {
-		GLFW.glfwDestroyWindow(id);
+		GLFW.glfwDestroyWindow(ventanaID);
 		GLFW.glfwTerminate();
 	}
 

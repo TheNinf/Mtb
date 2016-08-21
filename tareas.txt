@@ -2,7 +2,7 @@
 2 -> Reescribir la clase Framebuffer para añadir mejor soporte para multitargets 
 	y demás - Hecho
 16 -> Hacer otro renderizador para sombras optimizado.
-3 -> Reescribir el método renderizar de la clase PostProceso
+3 -> Reescribir el método renderizar de la clase PostProceso - Hecho
 4 -> ¿Instanced rendering con entidades con mismos modelos?
 5 -> Hacer de nuevo el texto para mejor calidad. 
 6 -> ¿Añadir una clase abtracta para los renderizadores 3D?

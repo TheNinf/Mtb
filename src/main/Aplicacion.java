@@ -14,21 +14,18 @@ public abstract class Aplicacion {
 
 	protected Aplicacion() {
 		iniciar();
-		agregarFuentesPersonalizadas();
 	}
 
 	public final void crearVentana(final String nombre, final int ancho, final int alto) {
 		ventana = new Ventana(nombre, ancho, alto);
 		ventana.iniciarOpenGL();
 		GestorOpenAL.iniciar();
-
-		contador = System.nanoTime();
 	}
 
 	public final void correr() {
 		final double NANO_POR_ACT = 1000000000 / 60;
 
-		long referenciaActualizacion = System.nanoTime();
+		long referenciaActualizacion = contador = System.nanoTime();
 		double delta = 0, tiempoTranscurrido = 0;
 
 		short fps = 0;
@@ -61,8 +58,7 @@ public abstract class Aplicacion {
 				contador = System.nanoTime();
 				this.fps = fps;
 				this.aps = aps;
-				aps = 0;
-				fps = 0;
+				fps = aps = 0;
 			}
 		}
 	}
@@ -74,10 +70,6 @@ public abstract class Aplicacion {
 	public abstract void renderizar();
 
 	public void tick() {
-
-	}
-
-	public void agregarFuentesPersonalizadas() {
 
 	}
 

@@ -53,7 +53,7 @@ void main(void){
 	//weight = pow(1f - weight, 5);
 	//result += textureDistorted(samplerTexture, texcoord + haloVector, direction, distortion) * weight;
 		
-	result *= texture(lensColor, vec2(length(center - texcoord) / length(center), 0)) * 6.34f;
+	result *= texture(lensColor, vec2(length(center - texcoord) / length(center), 0)) * 7.34f;
 
 	vec4 lensDirt = texture(lensDirtImage, textureCoords);
 	result *= lensDirt;
