@@ -103,7 +103,7 @@ public class RenderizadorEntidades {
 					GL12.glDrawRangeElements(GL11.GL_TRIANGLES, 0, numeroIndices, numeroIndices, GL11.GL_UNSIGNED_INT,
 							0);
 				else
-					GL11.glDrawElements(GL11.GL_POINTS, numeroIndices, GL11.GL_UNSIGNED_INT, 0);
+					GL11.glDrawElements(GL11.GL_TRIANGLES, numeroIndices, GL11.GL_UNSIGNED_INT, 0);
 			}
 
 			GL20.glDisableVertexAttribArray(0);

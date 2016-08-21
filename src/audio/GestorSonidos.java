@@ -2,6 +2,8 @@ package audio;
 
 import java.util.HashMap;
 
+import utils.exceptions.WavDataException;
+
 public final class GestorSonidos {
 
 	private static final HashMap<String, Sonido> sonidos = new HashMap<>();
@@ -19,7 +21,13 @@ public final class GestorSonidos {
 		if (sonido != null)
 			return sonido;
 
-		DatosWav datos = DatosWav.leerWavDesdeArchivo(nombre + ".wav");
+		// DatosWav datos = DatosWav.leerWavDesdeArchivo(nombre + ".wav");
+		DatosWav datos = null;
+		try {
+			datos = DatosWav.leerWavDesdeArchivo(nombre + ".wav");
+		} catch (final WavDataException e) {
+			System.out.println("Ha habido un problema al intentar leer el archivo WAV: " + e.getMessage());
+		}
 		if (datos == null)
 			return null;
 

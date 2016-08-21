@@ -111,8 +111,7 @@ public class RenderizadorSprites extends Renderizador2D {
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 
-		final byte grandaria = (byte) texturas.length;
-		for (byte i = 0; i < grandaria; i++) {
+		for (byte i = 0; i < MAX_TEXTURAS; i++) {
 			GL13.glActiveTexture(GL13.GL_TEXTURE0 + i);
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, texturas[i]);
 		}

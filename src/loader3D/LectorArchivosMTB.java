@@ -6,6 +6,9 @@ import java.nio.ByteBuffer;
 
 public class LectorArchivosMTB {
 
+	private LectorArchivosMTB() {
+	}
+
 	// TODO hacer que en un archivo puedan haber + de un objeto
 	public static final ModeloMTB leerObjetoMTB(final String ruta) {
 		ModeloMTB modelo = null;

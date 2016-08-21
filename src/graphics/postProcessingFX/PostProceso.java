@@ -24,7 +24,6 @@ public final class PostProceso {
 
 	public static final void iniciar() {
 		iniciarVAO();
-
 		lensFlare = new LensFlare(Aplicacion.obtenerAncho(), Aplicacion.obtenerAncho());
 	}
 

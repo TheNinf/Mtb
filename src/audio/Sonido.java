@@ -7,6 +7,7 @@ import org.lwjgl.openal.AL11;
 
 import maths.Vector3;
 import utils.PoolObjeto;
+import utils.exceptions.WavDataException;
 
 public class Sonido {
 
@@ -43,13 +44,13 @@ public class Sonido {
 		GestorSonidos.agregarSonido(this);
 	}
 
-	public Sonido(final String nombre, final String ruta) {
+	public Sonido(final String nombre, final String ruta) throws WavDataException {
 		this(nombre, DatosWav.leerWavDesdeArchivo(ruta));
 	}
 
 	// TODO hacer algo con estas variables
 	public Sonido(final String nombre, final String ruta, final int modeloDistancia, final float distMaxima,
-			final float distReferencia, final float atenuacion) {
+			final float distReferencia, final float atenuacion) throws WavDataException {
 		this(nombre, ruta);
 
 		this.modeloDistancia = modeloDistancia;
@@ -83,7 +84,6 @@ public class Sonido {
 			ejecutar(() -> AL10.alSourcePause(source));
 	}
 
-	// TODO supongo que esto no funcionará
 	public final boolean estaSonando() {
 		ejecutar(() -> {
 			sonando = AL10.alGetSourcei(source, AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING;

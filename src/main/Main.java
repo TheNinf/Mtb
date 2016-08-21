@@ -69,7 +69,7 @@ public class Main extends Aplicacion {
 
 	@Override
 	public final void iniciar() {
-		crearVentana("Mataluba Core", 1280, 720);
+		crearVentana("Testeando el engine!", 1280, 720);
 		PostProceso.iniciar();
 	}
 
