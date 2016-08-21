@@ -1,9 +1,7 @@
 package main;
 
 import audio.GestorOpenAL;
-import graphics.Ventana;
-import graphics.g2d.fonts.GestorFuentes;
-import maths.Vec2;
+import maths.Vector2;
 import utils.PoolObjeto;
 
 public abstract class Aplicacion {
@@ -16,7 +14,6 @@ public abstract class Aplicacion {
 
 	protected Aplicacion() {
 		iniciar();
-		GestorFuentes.iniciarFuentesBasicas();
 		agregarFuentesPersonalizadas();
 	}
 
@@ -84,7 +81,7 @@ public abstract class Aplicacion {
 
 	}
 
-	public static final Vec2 posicionRaton() {
+	public static final Vector2 posicionRaton() {
 		return ventana.obtenerPosicionRaton();
 	}
 

@@ -3,6 +3,9 @@ package audio;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
 
+import maths.Vector3;
+import utils.PoolObjeto;
+
 public class Sonido {
 
 	// TODO hacer limpieza de VAOS, VBOS, SONIDOS, FRAMEBUFFERS, TEXTURAS
@@ -20,29 +23,33 @@ public class Sonido {
 		AL10.alBufferData(buffer, datos.formato, datos.datos, datos.frecuencia);
 
 		AL10.alSourcei(source, AL10.AL_BUFFER, buffer);
-		ponerPosicionSonido(0, 0, 0);
-		ponerVelocidadSonido(0, 0, 0);
+
+		final Vector3 posicionyvel = PoolObjeto.VECTOR3.solicitar();
+		ponerPosicionSonido(posicionyvel);
+		ponerVelocidadSonido(posicionyvel);
+		PoolObjeto.VECTOR3.devolver(posicionyvel);
 
 		modeloDistancia = AL11.AL_EXPONENT_DISTANCE;
 		GestorSonidos.agregarSonido(this);
 	}
 
 	public Sonido(final String nombre, final String ruta) {
-		this.nombre = nombre;
+		// this.nombre = nombre;
+		//
+		// this.source = AL10.alGenSources();
+		// this.buffer = AL10.alGenBuffers();
 
-		this.source = AL10.alGenSources();
-		this.buffer = AL10.alGenBuffers();
-
-		DatosWav datos = DatosWav.leerWavDesdeArchivo(ruta);
-		AL10.alBufferData(buffer, datos.formato, datos.datos, datos.frecuencia);
-		datos = null;
-
-		AL10.alSourcei(source, AL10.AL_BUFFER, buffer);
-		ponerPosicionSonido(0, 0, 0);
-		ponerVelocidadSonido(0, 0, 0);
-
-		modeloDistancia = AL11.AL_EXPONENT_DISTANCE;
-		GestorSonidos.agregarSonido(this);
+		this(nombre, DatosWav.leerWavDesdeArchivo(ruta));
+		// AL10.alBufferData(buffer, datos.formato, datos.datos,
+		// datos.frecuencia);
+		// datos = null;
+		//
+		// AL10.alSourcei(source, AL10.AL_BUFFER, buffer);
+		// ponerPosicionSonido(0, 0, 0);
+		// ponerVelocidadSonido(0, 0, 0);
+		//
+		// modeloDistancia = AL11.AL_EXPONENT_DISTANCE;
+		// GestorSonidos.agregarSonido(this);
 	}
 
 	// TODO hacer algo con estas variables
@@ -89,13 +96,13 @@ public class Sonido {
 		return this;
 	}
 
-	public final Sonido ponerPosicionSonido(final float x, final float y, final float z) {
-		AL10.alSource3f(source, AL10.AL_POSITION, x, y, z);
+	public final Sonido ponerPosicionSonido(final Vector3 posicion) {
+		AL10.alSource3f(source, AL10.AL_POSITION, posicion.x, posicion.y, posicion.z);
 		return this;
 	}
 
-	public final Sonido ponerVelocidadSonido(final float x, final float y, final float z) {
-		AL10.alSource3f(source, AL10.AL_VELOCITY, x, y, z);
+	public final Sonido ponerVelocidadSonido(final Vector3 velocidad) {
+		AL10.alSource3f(source, AL10.AL_VELOCITY, velocidad.x, velocidad.y, velocidad.z);
 		return this;
 	}
 

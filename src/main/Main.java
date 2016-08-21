@@ -6,70 +6,59 @@ import audio.GestorSonidos;
 import entity.Camara;
 import entity.Entidad;
 import entity.Modelo;
-import entity.Renderizador3D;
+import entity.RenderizadorEntidades;
 import graphics.Shader;
 import graphics.Textura;
-import graphics.g2d.fonts.GestorFuentes;
-import graphics.g2d.fonts.Label;
+import graphics.graphics2D.Sprite;
 import graphics.layer.CapaTiles;
 import graphics.postProcessingFX.PostProceso;
 import graphics.postProcessingFX.lensFlare.LensFlare;
 import loader3D.LectorArchivosMTB;
 import loader3D.ModeloMTB;
-import maths.Vec3;
-import maths.Vec4;
+import maths.Vector3;
 
 public class Main extends Aplicacion {
 
-	private final Label label;
 	private final CapaTiles capa;
 	private final Camara camara;
-	Renderizador3D renderizador;
+	RenderizadorEntidades renderizador;
 	Entidad entidad;
 
-	static {
-		System.out.println(2 << 1);
-	}
-
 	protected Main() {
-		label = new Label("Hola", -16, 9, GestorFuentes.obtener("Source Sans Pro"), new Vec4(0, 0, 0, 1),
-				Label.Alineamiento.CENTRO, 15.8f);
-		Shader shader = new Shader("src/shaders/basic.vert", "src/shaders/basic.frag");
+		Shader shader = new Shader("src/shaders/sprite.vert", "src/shaders/sprite.geom", "src/shaders/sprite.frag");
+		// Shader shader = new Shader("src/shaders/basic.vert",
+		// "src/shaders/basic.frag");
 		capa = new CapaTiles(shader);
 		shader.enlazar();
 		int[] texIDS = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 		shader.uniformArrayInt("textures", texIDS);
 		shader.desenlazar();
 
-		capa.agregar(label);
+		// capa.agregar(label);
 
 		ModeloMTB m = LectorArchivosMTB.leerObjetoMTB("src/resultado.mtb");
-		renderizador = new Renderizador3D();
+		renderizador = new RenderizadorEntidades();
 		final Modelo modelo = new Modelo(m.obtenerVertices(), m.obtenerNormals(), m.obtenerTextureCoords(),
 				m.obtenerTangentes(), m.obtenerBitangentes(), m.obtenerIndices(),
 				new Textura("src/crate.png", Textura.TIPO.TEXTURA_3D)).ponerBrillo(9)
 						.ponerTexturaReflejo(new Textura("src/crateSpecular.png", Textura.TIPO.TEXTURA_3D))
 						.ponerNormalMap(new Textura("src/crateNormalMap.png", Textura.TIPO.TEXTURA_3D));
 
-		entidad = new Entidad(modelo, new Vec3(-5, 1, -10), new Vec3(0, 0, 0), 0.01f);
-		Entidad entidad2 = new Entidad(modelo, new Vec3(-5, 0, -5), new Vec3(90, 0, 0), 0.01f);
+		entidad = new Entidad(modelo, new Vector3(-5, 1, -10), new Vector3(0, 0, 0), 0.01f);
+		Entidad entidad2 = new Entidad(modelo, new Vector3(-5, 0, -5), new Vector3(90, 0, 0), 0.01f);
 
 		renderizador.agregar(entidad);
 		renderizador.agregar(entidad2);
 
-		// Random r = new Random();
-		// for (int i = 0; i < 1000; i++) {
-		// // renderizador.agregar(
-		// // new Entidad(modelo, new Vec3(r.nextFloat() * 60 - 30,
-		// // r.nextFloat() * 60, r.nextFloat() * -60),
-		// // new Vec3(0, 0, 180), 0.01f));
-		// }
-		// capa.agregar(new Sprite(-16, 9, 8, 8,
-		// renderizador.obtenerShadowTexture()));
+		Textura t = new Textura("src/crateNormalMap.png", Textura.TIPO.TEXTURA_SPRITE);
+		for (int x = -16; x < 16; x++)
+			for (int y = 9; y > -9; y--)
+				capa.agregar(new Sprite(x, y, 0.9f, 0.9f, t));
+		// capa.agregar(new Sprite(-16, 9, 8, 8, new Vector4(0, 1, 1, 1)));
 
 		GL11.glClearColor(0, 0.5f, 0.9f, 1);
 		GestorSonidos.obtener("test").sonar();
-		camara = new Camara(new Vec3(0));
+		camara = new Camara(new Vector3());
 
 	}
 
@@ -141,7 +130,7 @@ public class Main extends Aplicacion {
 
 	@Override
 	public final void tick() {
-		label.texto("fps: " + fps);
+		System.out.println(fps);
 	}
 
 	@Override

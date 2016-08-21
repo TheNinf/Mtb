@@ -51,12 +51,9 @@ public class Textura {
 		}
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
-		// GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, ancho, alto,
-		// 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE,
-		// data);
+
 		final IntBuffer buffer = BufferUtils.createIntBuffer(grandaria);
 
-		buffer.rewind();
 		buffer.put(imagen.getRGB(0, 0, ancho, alto, null, 0, ancho), 0, grandaria);
 		buffer.rewind();
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, ancho, alto, 0, GL12.GL_BGRA,
@@ -84,7 +81,6 @@ public class Textura {
 		final int grandaria = ancho * alto;
 		final IntBuffer buffer = BufferUtils.createIntBuffer(grandaria);
 
-		buffer.rewind();
 		buffer.put(imagen.getRGB(0, 0, ancho, alto, null, 0, ancho), 0, grandaria);
 		buffer.rewind();
 		enlazar();

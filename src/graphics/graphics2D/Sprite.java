@@ -1,11 +1,11 @@
-package graphics.g2d;
+package graphics.graphics2D;
 
 import graphics.Textura;
-import maths.Vec4;
+import maths.Vector4;
 
 public class Sprite extends Renderizable2D {
 
-	public Sprite(final float x, final float y, final float ancho, final float alto, final Vec4 color) {
+	public Sprite(final float x, final float y, final float ancho, final float alto, final Vector4 color) {
 		super(x, y, ancho, alto, color);
 	}
 

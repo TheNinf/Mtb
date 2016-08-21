@@ -6,7 +6,7 @@ import org.lwjgl.opengl.GL30;
 
 import graphics.Shader;
 import graphics.Textura;
-import graphics.framebuffer.Framebuffer;
+import graphics.graphics2D.framebuffer.Framebuffer;
 import graphics.postProcessingFX.PostProceso;
 
 public class LensFlare extends PostProceso {

@@ -3,9 +3,9 @@ package graphics.layer;
 import java.util.ArrayList;
 
 import graphics.Shader;
-import graphics.g2d.Renderizable2D;
-import graphics.g2d.Renderizador2D;
-import maths.Mat4;
+import graphics.graphics2D.Renderizable2D;
+import graphics.graphics2D.Renderizador2D;
+import maths.Matrix4;
 
 public abstract class Capa {
 
@@ -13,16 +13,16 @@ public abstract class Capa {
 	protected ArrayList<Renderizable2D> renderizables;
 	protected Shader shader;
 
-	protected Mat4 matrizProyeccion;
+	protected Matrix4 matrizProyeccion;
 
-	protected Capa(final Renderizador2D renderizador, final Mat4 matrizProyeccion, final Shader shader) {
+	protected Capa(final Renderizador2D renderizador, final Matrix4 matrizProyeccion, final Shader shader) {
 		this.renderizador = renderizador;
 		this.shader = shader;
 		this.matrizProyeccion = matrizProyeccion;
 
 		this.renderizables = new ArrayList<>();
 		iniciar();
-		shader.uniformMat4("pr_matrix", matrizProyeccion);
+		shader.uniformMatrix4("pr_matrix", matrizProyeccion);
 		terminar();
 	}
 

@@ -3,7 +3,7 @@ package graphics.postProcessingFX.grises;
 import org.lwjgl.opengl.GL11;
 
 import graphics.Shader;
-import graphics.framebuffer.Framebuffer;
+import graphics.graphics2D.framebuffer.Framebuffer;
 import graphics.postProcessingFX.PostProceso;
 
 public class EscalaGrises extends PostProceso {

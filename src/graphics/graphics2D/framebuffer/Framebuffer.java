@@ -1,4 +1,4 @@
-package graphics.framebuffer;
+package graphics.graphics2D.framebuffer;
 
 import java.nio.ByteBuffer;
 
@@ -13,6 +13,8 @@ import utils.exceptions.FramebufferException;
 
 public class Framebuffer {
 
+	// TODO actualizar el alto de los framebuffers al cambiar el tamaño del
+	// display
 	public enum TIPO {
 		SOLO_DEPTH, SOLO_TEXTURAS, DEPTH_Y_TEXTURAS
 	}

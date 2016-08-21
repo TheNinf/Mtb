@@ -26,7 +26,7 @@ public class Matrix4 {
 	}
 
 	public Matrix4(final float diagonal) {
-		this();
+		elementos = new float[16];
 		elementos[m00] = elementos[m11] = elementos[m22] = elementos[m33] = diagonal;
 	}
 
@@ -147,11 +147,10 @@ public class Matrix4 {
 
 		float suma = 0.0f;
 		for (byte y = 0; y < 4; y++) {
-			final int y1 = (y << 1);
-
+			final int y1 = (y << 2);
 			for (byte x = 0; x < 4; x++) {
 				for (byte e = 0; e < 4; e++) {
-					suma += src.elementos[x + (e << 1)] * otra.elementos[e + y1];
+					suma += src.elementos[x + (e << 2)] * otra.elementos[e + y1];
 				}
 				datos[x + y1] = suma;
 				suma = 0;

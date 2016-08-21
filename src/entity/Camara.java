@@ -3,15 +3,14 @@ package entity;
 import org.lwjgl.glfw.GLFW;
 
 import main.Aplicacion;
-import maths.Vec3;
 import maths.Vector3;
 
 public class Camara {
 
-	private final Vec3 posicion;
-	public Vector3 rotacion;
+	public final Vector3 posicion;
+	public final Vector3 rotacion;
 
-	public Camara(final Vec3 posicion) {
+	public Camara(final Vector3 posicion) {
 		this.posicion = posicion;
 		rotacion = new Vector3();
 	}
@@ -32,9 +31,4 @@ public class Camara {
 			posicion.z += Math.cos(Math.toRadians(rotacion.y));
 		}
 	}
-
-	public final Vec3 obtenerPosicion() {
-		return posicion;
-	}
-
 }

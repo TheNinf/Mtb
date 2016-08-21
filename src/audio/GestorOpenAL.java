@@ -11,7 +11,7 @@ import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALC10;
 import org.lwjgl.openal.ALCCapabilities;
 
-import maths.Vec3;
+import maths.Vector3;
 
 public class GestorOpenAL {
 
@@ -36,10 +36,10 @@ public class GestorOpenAL {
 		ALC10.alcMakeContextCurrent(contexto);
 		AL.createCapabilities(capacidadesServicio);
 
-		ponerPosicionJugador(new Vec3());
+		ponerPosicionJugador(new Vector3());
 	}
 
-	public static final void ponerPosicionJugador(final Vec3 posicion) {
+	public static final void ponerPosicionJugador(final Vector3 posicion) {
 		hilo.execute(() -> AL10.alListener3f(AL10.AL_POSITION, posicion.x, posicion.y, posicion.z));
 	}
 

@@ -1,17 +1,15 @@
-package graphics;
+package graphics.graphics2D;
 
 import java.util.ArrayList;
 
-import graphics.g2d.Renderizable2D;
-import graphics.g2d.Renderizador2D;
-import maths.Mat4;
+import maths.Matrix4;
 
 public class Grupo extends Renderizable2D {
 
 	private final ArrayList<Renderizable2D> renderizables;
-	private Mat4 matrizTransformacion;
+	private Matrix4 matrizTransformacion;
 
-	public Grupo(final Mat4 matrizTransformacion) {
+	public Grupo(final Matrix4 matrizTransformacion) {
 		renderizables = new ArrayList<>();
 		this.matrizTransformacion = matrizTransformacion;
 	}
@@ -30,7 +28,7 @@ public class Grupo extends Renderizable2D {
 		renderizador.pop();
 	}
 
-	public void cambiarMatriz(final Mat4 matriz) {
+	public void cambiarMatriz(final Matrix4 matriz) {
 		this.matrizTransformacion = matriz;
 	}
 }

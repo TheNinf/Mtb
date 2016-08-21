@@ -1,11 +1,11 @@
-package graphics;
+package main;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 
-import maths.Vec2;
+import maths.Vector2;
 
 public class Ventana {
 
@@ -21,7 +21,7 @@ public class Ventana {
 	private static final boolean[] botonesRaton = new boolean[NUM_BOTONES];
 	private static final boolean[] estadoBotonesRaton = new boolean[NUM_BOTONES];
 
-	private final Vec2 posRaton;
+	private final Vector2 posRaton;
 
 	public Ventana(final String titulo, final int ancho, final int alto) {
 		GLFWErrorCallback.createPrint(System.out).set();
@@ -47,7 +47,7 @@ public class Ventana {
 
 		this.ancho = ancho;
 		this.alto = alto;
-		this.posRaton = new Vec2(0);
+		this.posRaton = new Vector2();
 	}
 
 	private void iniciarCallbacks() {
@@ -135,7 +135,7 @@ public class Ventana {
 		return alto;
 	}
 
-	public final Vec2 obtenerPosicionRaton() {
+	public final Vector2 obtenerPosicionRaton() {
 		return posRaton;
 	}
 }

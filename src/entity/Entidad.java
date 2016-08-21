@@ -1,16 +1,18 @@
 package entity;
 
-import maths.Vec3;
+import maths.Vector3;
+import utils.PoolObjeto;
 
 public class Entidad {
 
 	private final Modelo modelo;
 
-	private final Vec3 posicion;
-	private final Vec3 rotacion;
+	public final Vector3 posicion;
+	public final Vector3 rotacion;
+
 	private final float escalado;
 
-	public Entidad(final Modelo modelo, final Vec3 posicion, final Vec3 rotacion, final float escalado) {
+	public Entidad(final Modelo modelo, final Vector3 posicion, final Vector3 rotacion, final float escalado) {
 		this.modelo = modelo;
 		this.posicion = posicion;
 		this.escalado = escalado;
@@ -18,19 +20,13 @@ public class Entidad {
 	}
 
 	public void incrementarRot(float x, float y, float z) {
-		rotacion.sumar(new Vec3(x, y, z));
+		Vector3 rotAIncrementar = PoolObjeto.VECTOR3.solicitar().set(x, y, z);
+		Vector3.sumar(rotacion, rotAIncrementar, rotacion);
+		PoolObjeto.VECTOR3.devolver(rotAIncrementar);
 	}
 
 	public Modelo obtenerModelo() {
 		return modelo;
-	}
-
-	public Vec3 obtenerPosicion() {
-		return posicion;
-	}
-
-	public Vec3 obtenerRotacion() {
-		return rotacion;
 	}
 
 	public final float obtenerEscalado() {

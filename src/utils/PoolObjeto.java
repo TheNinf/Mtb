@@ -3,17 +3,25 @@ package utils;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import maths.Vec3;
+import maths.Matrix4;
+import maths.Vector3;
 
 public abstract class PoolObjeto<G> {
 
 	private static final ArrayList<PoolObjeto<? extends Object>> pools = new ArrayList<>();
 	private static final short tiempoExpiracion = 6000;
 
-	public static final PoolObjeto<Vec3> VEC3 = new PoolObjeto<Vec3>() {
+	public static final PoolObjeto<Vector3> VECTOR3 = new PoolObjeto<Vector3>() {
 		@Override
-		public Vec3 obtenerObjeto() {
-			return new Vec3();
+		public Vector3 obtenerObjeto() {
+			return new Vector3();
+		}
+	};
+
+	public static final PoolObjeto<Matrix4> MATRIX4 = new PoolObjeto<Matrix4>() {
+		@Override
+		public Matrix4 obtenerObjeto() {
+			return new Matrix4();
 		}
 	};
 
