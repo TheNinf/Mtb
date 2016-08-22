@@ -100,8 +100,7 @@ public final class DatosWav {
 		System.arraycopy(datos, pointer, sonido, 0, tamDatos);
 
 		final ByteBuffer bufferSonido = BufferUtils.createByteBuffer(tamDatos);
-		bufferSonido.put(sonido);
-		bufferSonido.flip();
+		bufferSonido.put(sonido).flip();
 
 		return new DatosWav(bitsPorMuestra == 8 ? (canales == 1 ? AL10.AL_FORMAT_MONO8 : AL10.AL_FORMAT_STEREO8)
 				: (canales == 1 ? AL10.AL_FORMAT_MONO16 : AL10.AL_FORMAT_STEREO16), frecuencia, bufferSonido);

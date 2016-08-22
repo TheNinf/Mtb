@@ -49,13 +49,13 @@ public class Main extends Aplicacion {
 		renderizador.agregar(entidad2);
 
 		Textura t = new Textura("src/crateNormalMap.png", Textura.TIPO.TEXTURA_SPRITE);
-		for (int x = -16; x < 16; x++)
-			for (int y = 9; y > -9; y--)
-				// capa.agregar(new Sprite(x, y, 0.9f, 0.9f, t));
-				// capa.agregar(new Sprite(-16, 9, 8, 8, new Vector4(0, 1, 1,
-				// 1)));
+		// for (int x = -16; x < 16; x++)
+		// for (int y = 9; y > -9; y--)
+		// capa.agregar(new Sprite(x, y, 0.9f, 0.9f, t));
+		// capa.agregar(new Sprite(-16, 9, 8, 8, new Vector4(0, 1, 1,
+		// 1)));
 
-				GL11.glClearColor(0, 0.5f, 0.9f, 1);
+		GL11.glClearColor(0.f, 0.3f, 0.5f, 1);
 		GestorSonidos.obtener("test").sonar();
 		camara = new Camara(new Vector3());
 

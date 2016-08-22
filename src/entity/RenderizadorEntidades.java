@@ -24,7 +24,10 @@ public class RenderizadorEntidades {
 
 	private final HashMap<Modelo, ArrayList<Entidad>> entidades;
 	private final Shader shaderEntidades;
-	private final Matrix4 matrizPerspectiva;
+
+	public static Matrix4 matrizPerspectiva;
+	public static Matrix4 viewMatrix;
+
 	private final Framebuffer framebuffer;
 
 	private final RenderizadorSombrasEntidades renderizadorSombras;
@@ -36,7 +39,7 @@ public class RenderizadorEntidades {
 		shaderEntidades = new Shader("src/shaders/entity.vert", "src/shaders/entity.frag");
 		matrizPerspectiva = Matrix4.perspectiva(70, 1280f / 720f, CERCA, LEJOS, null);
 		framebuffer = new Framebuffer(Aplicacion.obtenerAncho(), Aplicacion.obtenerAlto(),
-				Framebuffer.TIPO.DEPTH_Y_TEXTURAS, 2);
+				Framebuffer.TIPO.DEPTH_Y_TEXTURAS, 3);
 
 		shaderEntidades.enlazar();
 		shaderEntidades.uniformMatrix4("projectionMatrix", matrizPerspectiva);
@@ -52,6 +55,7 @@ public class RenderizadorEntidades {
 
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glCullFace(GL11.GL_BACK);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
 
 		framebuffer.enlazar();
 		shaderEntidades.enlazar();
@@ -59,7 +63,6 @@ public class RenderizadorEntidades {
 
 		GL13.glActiveTexture(GL13.GL_TEXTURE3);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, renderizadorSombras.framebufferSombras.obtenerDepth());
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
 
 		final Vector3 vectorReusable = PoolObjeto.VECTOR3.solicitar();
 		final Vector3 posicionCamara = camara.posicion;
@@ -69,6 +72,7 @@ public class RenderizadorEntidades {
 		vectorReusable.set(-posicionCamara.x, -posicionCamara.y, -posicionCamara.z);
 		Matrix4.trasladar(vectorReusable, transformAndViewMatrices);
 		shaderEntidades.uniformMatrix4("viewMatrix", transformAndViewMatrices);
+		viewMatrix = transformAndViewMatrices;
 
 		for (final Modelo modelo : entidades.keySet()) {
 			final int numeroIndices = modelo.obtenerNumeroIndices();

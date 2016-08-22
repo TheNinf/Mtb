@@ -111,15 +111,15 @@ public class Sonido {
 		return this;
 	}
 
-	public final String obtenerNombre() {
-		return nombre;
-	}
-
 	public final void destruir() {
 		ejecutar(() -> {
 			AL10.alDeleteBuffers(buffer);
 			AL10.alDeleteSources(source);
 		});
+	}
+
+	public final String obtenerNombre() {
+		return nombre;
 	}
 
 	private static final void ejecutar(final Runnable comando) {

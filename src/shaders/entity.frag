@@ -2,6 +2,7 @@
 
 layout (location = 0) out vec4 color;
 layout (location = 1) out vec4 brightColor;
+layout (location = 2) out vec4 godRaysColor;
 
 in vec2 textureCoords;
 in vec3 fragmentPosition;
@@ -19,7 +20,6 @@ uniform float shininess;
 const float minDiffuse = 0.4f;
 
 float shadowCalculation(vec4 posLightSpace){
-	//vec3 projCoords = posLightSpace.xyz / posLightSpace.w;
 	vec3 projCoords = posLightSpace.xyz / 2f + 0.5f;
 	if(projCoords.z > 1.0f)
 		return 1.0f;
@@ -50,17 +50,20 @@ void main(void){
 	float shadow = shadowCalculation(worldPositionLightSpace);
 	float diffuse = max(dot(unitNormal, -lightDirection) * shadow, minDiffuse);
 
-	float specularFactor = texture(specularTexture, textureCoords).r;
+	float specularFactor = shininess > 0.0f ? 
+		texture(specularTexture, textureCoords).r : 0.0f;
 	if(shininess > 0.0f && specularFactor > 0.0f) {
 		vec3 unitCamVector = normalize(toCameraVector - fragmentPosition);
 		vec3 halfwayDirection = normalize(-lightDirection + unitCamVector);
 		float specular = pow(dot(unitNormal, halfwayDirection), shininess) * specularFactor; 
 		
-		vec3 finalColor = diffuse * textureColor.xyz + (specular * diffuse);
-		brightColor = color = vec4(finalColor, textureColor.a);
+		vec3 finalColor = (textureColor.xyz + specular) * diffuse;
+		color = vec4(finalColor, textureColor.a);
+		brightColor = diffuse > minDiffuse ? color : vec4(0);
 	} else {
-		brightColor = vec4(0, 0, 0, 1);
+		brightColor = vec4(0);
 		color.xyz = diffuse * textureColor.xyz;
 		color.a = textureColor.a;
 	}
+	godRaysColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 }

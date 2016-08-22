@@ -59,14 +59,14 @@ public class LectorArchivosMTB {
 		return ByteBuffer.wrap(origen, pointer, 4).getInt();
 	}
 
-	public static final void leerInts(final byte[] origen, final int[] destino, int pointer) {
+	private static final void leerInts(final byte[] origen, final int[] destino, int pointer) {
 		for (int i = 0; i < destino.length; i++) {
 			destino[i] = leerInt(origen, pointer);
 			pointer += 4;
 		}
 	}
 
-	public static float leerFloat(final byte[] origen, final int pointer) {
+	private static final float leerFloat(final byte[] origen, final int pointer) {
 		return Float.intBitsToFloat(leerInt(origen, pointer));
 	}
 

@@ -30,5 +30,11 @@ public class Camara {
 			posicion.x -= Math.sin(Math.toRadians(rotacion.y));
 			posicion.z += Math.cos(Math.toRadians(rotacion.y));
 		}
+		if (Aplicacion.estaTeclaPulsada(GLFW.GLFW_KEY_UP)) {
+			posicion.y++;
+		}
+		if (Aplicacion.estaTeclaPulsada(GLFW.GLFW_KEY_DOWN)) {
+			posicion.y--;
+		}
 	}
 }
