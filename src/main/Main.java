@@ -1,14 +1,17 @@
 package main;
 
-import org.lwjgl.opengl.GL11;
+import java.util.Random;
+
+import org.lwjgl.opengl.GL30;
 
 import audio.GestorSonidos;
 import entity.Camara;
 import entity.Entidad;
 import entity.Modelo;
-import entity.RenderizadorEntidades;
 import graphics.Shader;
 import graphics.Textura;
+import graphics.framebuffer.Framebuffer;
+import graphics.graphics3D.RenderizadorEntidades;
 import graphics.layer.CapaTiles;
 import graphics.postProcessingFX.PostProceso;
 import loader3D.LectorArchivosMTB;
@@ -34,7 +37,7 @@ public class Main extends Aplicacion {
 
 		// capa.agregar(label);
 
-		ModeloMTB m = LectorArchivosMTB.leerObjetoMTB("src/resultado.mtb");
+		ModeloMTB m = LectorArchivosMTB.leerObjetoMTB("src/crate.mtb");
 		renderizador = new RenderizadorEntidades();
 		final Modelo modelo = new Modelo(m.obtenerVertices(), m.obtenerNormals(), m.obtenerTextureCoords(),
 				m.obtenerTangentes(), m.obtenerBitangentes(), m.obtenerIndices(),
@@ -43,7 +46,7 @@ public class Main extends Aplicacion {
 						.ponerNormalMap(new Textura("src/crateNormalMap.png", Textura.TIPO.TEXTURA_3D));
 
 		entidad = new Entidad(modelo, new Vector3(-5, 1, -10), new Vector3(0, 0, 0), 0.01f);
-		Entidad entidad2 = new Entidad(modelo, new Vector3(-5, 0, -5), new Vector3(90, 0, 0), 0.01f);
+		Entidad entidad2 = new Entidad(modelo, new Vector3(-5, 0, -5), new Vector3(0, 0, 0), 0.01f);
 
 		renderizador.agregar(entidad);
 		renderizador.agregar(entidad2);
@@ -55,10 +58,14 @@ public class Main extends Aplicacion {
 		// capa.agregar(new Sprite(-16, 9, 8, 8, new Vector4(0, 1, 1,
 		// 1)));
 
-		GL11.glClearColor(0.f, 0.3f, 0.5f, 1);
+		Random r = new Random();
+		for (int i = 0; i < 1000; i++) {
+			Entidad e = new Entidad(modelo, new Vector3(r.nextFloat() * 200, r.nextFloat() * 200, r.nextFloat() * 2),
+					new Vector3(0, 0, 0), 0.01f);
+			renderizador.agregar(e);
+		}
 		GestorSonidos.obtener("test").sonar();
 		camara = new Camara(new Vector3());
-
 	}
 
 	public static void main(String[] args) {
@@ -89,7 +96,9 @@ public class Main extends Aplicacion {
 		camara.actualizar();
 		renderizador.mostrar(camara);
 
-		PostProceso.renderizar(renderizador.obtenerFramebuffer());
+		Framebuffer b = renderizador.obtenerFramebuffer();
+		PostProceso.renderizar(b.obtenerAttachment(GL30.GL_COLOR_ATTACHMENT0),
+				b.obtenerAttachment(GL30.GL_COLOR_ATTACHMENT1));
 		capa.iniciar();
 		capa.render();
 		capa.terminar();

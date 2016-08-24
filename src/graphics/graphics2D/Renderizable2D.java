@@ -6,9 +6,9 @@ import maths.Vector3;
 import maths.Vector4;
 
 public abstract class Renderizable2D {
-	protected Vector3 posicion;
-	protected Vector2 grandaria;
-	protected Vector4 color;
+	public Vector3 posicion;
+	public Vector2 grandaria;
+	public Vector4 color;
 
 	protected Textura textura;
 
@@ -47,13 +47,5 @@ public abstract class Renderizable2D {
 
 	public final int obtenerTID() {
 		return textura == null ? 0 : textura.obtenerID();
-	}
-
-	public final Vector2 obtenerGrandaria() {
-		return grandaria;
-	}
-
-	public final Vector4 obtenerColor() {
-		return color;
 	}
 }

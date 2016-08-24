@@ -2,13 +2,14 @@
 
 layout (location = 0) out vec4 color;
 layout (location = 1) out vec4 brightColor;
-layout (location = 2) out vec4 godRaysColor;
 
 in vec2 textureCoords;
 in vec3 fragmentPosition;
 in vec3 toCameraVector;
 in vec3 lightDirection;
 in vec4 worldPositionLightSpace;
+in vec3 normal;
+in float out_shouldUseNormalMap;
 
 uniform sampler2D samplerTexture;
 uniform sampler2D specularTexture;
@@ -20,7 +21,7 @@ uniform float shininess;
 const float minDiffuse = 0.4f;
 
 float shadowCalculation(vec4 posLightSpace){
-	vec3 projCoords = posLightSpace.xyz / 2f + 0.5f;
+	vec3 projCoords = posLightSpace.xyz / 2.0f + 0.5f;
 	if(projCoords.z > 1.0f)
 		return 1.0f;
 	
@@ -44,8 +45,13 @@ void main(void){
 		return;
 	}
 	
-	vec4 normalMapValue = 2.0f * texture(normalMap, textureCoords) - 1.0f;
-	vec3 unitNormal = normalize(normalMapValue.rgb);
+	vec3 unitNormal;
+	if(out_shouldUseNormalMap < 0.5f) {
+		unitNormal = normalize(normal);
+	} else {
+		vec4 normalMapValue = 2.0f * texture(normalMap, textureCoords) - 1.0f;
+		unitNormal = normalize(normalMapValue.rgb);
+	}
 
 	float shadow = shadowCalculation(worldPositionLightSpace);
 	float diffuse = max(dot(unitNormal, -lightDirection) * shadow, minDiffuse);
@@ -56,15 +62,17 @@ void main(void){
 		vec3 unitCamVector = normalize(toCameraVector - fragmentPosition);
 		vec3 halfwayDirection = normalize(-lightDirection + unitCamVector);
 		float specular = pow(dot(unitNormal, halfwayDirection), shininess) * specularFactor; 
-		
-		vec3 finalColor = (textureColor.xyz + specular) * diffuse;
-		color = vec4(finalColor, 0);
+	
+		//vec3 unitCamVector = normalize(toCameraVector);
+		//vec3 reflectedLightDirection = reflect(lightDirection, unitNormal);
+		//float specularFactor = dot(reflectedLightDire
+
+		vec3 finalColor = (textureColor.rgb + specular) * diffuse;
+		color = vec4(finalColor, textureColor.a);
 		brightColor = diffuse > minDiffuse ? color : vec4(0);
 	} else {
 		brightColor = vec4(0);
-		color.xyz = diffuse * textureColor.xyz;
-		//color.a = textureColor.a;
-		color.a = 0;
-	}
-	godRaysColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+		color.rgb = diffuse * textureColor.xyz;
+		color.a = textureColor.a;
+	}		
 }

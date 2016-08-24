@@ -1,4 +1,4 @@
-package entity;
+package graphics.graphics3D;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -11,7 +11,11 @@ import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
+import entity.Camara;
+import entity.Entidad;
+import entity.Modelo;
 import graphics.Shader;
+import graphics.Transform;
 import graphics.framebuffer.Framebuffer;
 import main.Aplicacion;
 import maths.Matrix4;
@@ -21,28 +25,28 @@ import utils.PoolObjeto;
 public class RenderizadorEntidades {
 	// TODO hacer qye solocse rendericen con normal map entidades cercanas
 	private static final float CERCA = 0.1f, LEJOS = 1000.0f;
+	private static final float DISTANCIA_RENDER_NORMAL_MAP_CUADRADO = 60 * 60;
 
 	private final HashMap<Modelo, ArrayList<Entidad>> entidades;
 	private final Shader shaderEntidades;
 
-	public static Matrix4 matrizPerspectiva;
-	public static Matrix4 viewMatrix;
-
 	private final Framebuffer framebuffer;
+	private final RenderizadorSkybox r;
 
 	private final RenderizadorSombrasEntidades renderizadorSombras;
 
 	public RenderizadorEntidades() {
+		Transform.setMatrizProyeccion(Matrix4.perspectiva(70, 1280f / 720f, CERCA, LEJOS, null));
+		r = new RenderizadorSkybox();
 		renderizadorSombras = new RenderizadorSombrasEntidades(1024, 1024);
 
 		entidades = new HashMap<>();
 		shaderEntidades = new Shader("src/shaders/entity.vert", "src/shaders/entity.frag");
-		matrizPerspectiva = Matrix4.perspectiva(70, 1280f / 720f, CERCA, LEJOS, null);
 		framebuffer = new Framebuffer(Aplicacion.obtenerAncho(), Aplicacion.obtenerAlto(),
-				Framebuffer.TIPO.DEPTH_Y_TEXTURAS, 3);
+				Framebuffer.TIPO.DEPTH_Y_TEXTURAS, 2);
 
 		shaderEntidades.enlazar();
-		shaderEntidades.uniformMatrix4("projectionMatrix", matrizPerspectiva);
+		shaderEntidades.uniformMatrix4("projectionMatrix", Transform.obtenerMatrizProyeccion());
 		shaderEntidades.uniformInt("samplerTexture", 0);
 		shaderEntidades.uniformInt("specularTexture", 1);
 		shaderEntidades.uniformInt("normalMap", 2);
@@ -51,28 +55,24 @@ public class RenderizadorEntidades {
 	}
 
 	public final void mostrar(final Camara camara) {
-		renderizadorSombras.renderizarSombras(camara);
-
+		/***** INICIACION ********/
+		Transform.setViewMatrices(camara);
+		final Vector3 vectorReusable = PoolObjeto.VECTOR3.solicitar();
+		final Vector3 ejes = PoolObjeto.VECTOR3.solicitar();
 		GL11.glEnable(GL11.GL_CULL_FACE);
-		GL11.glCullFace(GL11.GL_BACK);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 
+		renderizadorSombras.renderizarSombras(camara);
+
+		/********** ESCENA NORMAL ***********/
+		GL11.glCullFace(GL11.GL_BACK);
 		framebuffer.enlazar();
 		shaderEntidades.enlazar();
 		shaderEntidades.uniformMatrix4("lightSpaceMatrix", renderizadorSombras.matrizEspacioLuz);
+		shaderEntidades.uniformMatrix4("viewMatrix", Transform.obtenerViewMatrix());
 
 		GL13.glActiveTexture(GL13.GL_TEXTURE3);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, renderizadorSombras.framebufferSombras.obtenerDepth());
-
-		final Vector3 vectorReusable = PoolObjeto.VECTOR3.solicitar();
-		final Vector3 posicionCamara = camara.posicion;
-		final Vector3 ejes = PoolObjeto.VECTOR3.solicitar();
-
-		Matrix4 transformAndViewMatrices = Matrix4.rotar(camara.rotacion.y, ejes.set(0, 1, 0), null);
-		vectorReusable.set(-posicionCamara.x, -posicionCamara.y, -posicionCamara.z);
-		Matrix4.trasladar(vectorReusable, transformAndViewMatrices);
-		shaderEntidades.uniformMatrix4("viewMatrix", transformAndViewMatrices);
-		viewMatrix = transformAndViewMatrices;
 
 		for (final Modelo modelo : entidades.keySet()) {
 			final int numeroIndices = modelo.obtenerNumeroIndices();
@@ -94,14 +94,16 @@ public class RenderizadorEntidades {
 
 			for (final Entidad entidad : entidades.get(modelo)) {
 				final float escalado = entidad.obtenerEscalado();
-				transformAndViewMatrices = Matrix4.trasladar(entidad.posicion, null);
-				Matrix4.rotar(entidad.rotacion.x, ejes.set(1, 0, 0), transformAndViewMatrices);
-				Matrix4.rotar(entidad.rotacion.y, ejes.set(0, 1, 0), transformAndViewMatrices);
-				Matrix4.rotar(entidad.rotacion.z, ejes.set(0, 0, 1), transformAndViewMatrices);
+				Matrix4 transformationMatrix = Matrix4.trasladar(entidad.posicion, null);
+				Matrix4.rotar(entidad.rotacion.x, ejes.set(1, 0, 0), transformationMatrix);
+				Matrix4.rotar(entidad.rotacion.y, ejes.set(0, 1, 0), transformationMatrix);
+				Matrix4.rotar(entidad.rotacion.z, ejes.set(0, 0, 1), transformationMatrix);
 
 				vectorReusable.set(escalado, escalado, escalado);
-				Matrix4.escalar(vectorReusable, transformAndViewMatrices);
-				shaderEntidades.uniformMatrix4("transformationMatrix", transformAndViewMatrices);
+				Matrix4.escalar(vectorReusable, transformationMatrix);
+				shaderEntidades.uniformMatrix4("transformationMatrix", transformationMatrix);
+				shaderEntidades.uniformBoolean("shouldUseNormalMap",
+						camara.posicion.distanciaCuadrado(entidad.posicion) < DISTANCIA_RENDER_NORMAL_MAP_CUADRADO);
 
 				if (numeroIndices < GL12.GL_MAX_ELEMENTS_INDICES)
 					GL12.glDrawRangeElements(GL11.GL_TRIANGLES, 0, numeroIndices, numeroIndices, GL11.GL_UNSIGNED_INT,
@@ -118,9 +120,13 @@ public class RenderizadorEntidades {
 			GL30.glBindVertexArray(0);
 		}
 
+		/****** CIERRE **********/
 		PoolObjeto.VECTOR3.devolver(vectorReusable);
 		PoolObjeto.VECTOR3.devolver(ejes);
 		shaderEntidades.desenlazar();
+
+		r.render();
+
 		framebuffer.desenlazar();
 
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -141,7 +147,7 @@ public class RenderizadorEntidades {
 
 	public final class RenderizadorSombrasEntidades {
 
-		private static final float GRANDARIA = 48.0f;
+		private static final float GRANDARIA = 50.0f;
 		private static final float PROFUNDIDAD = 150.0f;
 
 		private final FramebufferSombras framebufferSombras;
@@ -155,7 +161,7 @@ public class RenderizadorEntidades {
 			matrizOrtografica = Matrix4.ortografico(-GRANDARIA, GRANDARIA, -GRANDARIA, GRANDARIA, CERCA, PROFUNDIDAD,
 					null);
 			matrizEspacioLuz = new Matrix4();
-			shadowShader = new Shader("src/entity/shadow.vert", "src/entity/shadow.frag");
+			shadowShader = new Shader("src/graphics/graphics3D/shadow.vert", "src/graphics/graphics3D/shadow.frag");
 		}
 
 		public final void renderizarSombras(final Camara camara) {
@@ -245,7 +251,6 @@ public class RenderizadorEntidades {
 				GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL14.GL_DEPTH_COMPONENT16, ancho, alto, 0,
 						GL11.GL_DEPTH_COMPONENT, GL11.GL_FLOAT, (ByteBuffer) null);
 				GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_COMPARE_MODE, GL14.GL_COMPARE_R_TO_TEXTURE);
-				// TODO LESS O LEQUAL???
 				GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_COMPARE_FUNC, GL11.GL_LEQUAL);
 				GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
 				GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);

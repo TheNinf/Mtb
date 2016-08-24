@@ -62,6 +62,14 @@ public class Vector3 {
 		return obtenerModulo();
 	}
 
+	public final float distanciaCuadrado(final Vector3 otro) {
+		return (float) (Math.pow(x - otro.x, 2) + Math.pow(y - otro.y, 2) + Math.pow(z - otro.z, 2));
+	}
+
+	public final float distancia(final Vector3 otro) {
+		return (float) Math.sqrt(distanciaCuadrado(otro));
+	}
+
 	private final float obtenerModulo() {
 		return (float) Math.sqrt(x * x + y * y + z * z);
 	}

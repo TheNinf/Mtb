@@ -63,6 +63,10 @@ public class Shader {
 		GL20.glUniformMatrix3fv(variables.get(nombre), false, valores);
 	}
 
+	public final void uniformBoolean(final String nombre, final boolean valor) {
+		uniformFloat(nombre, valor ? GL11.GL_TRUE : GL11.GL_FALSE);
+	}
+
 	private final void comprobarVariable(final String nombre) {
 		if (!variables.containsKey(nombre))
 			variables.put(nombre, GL20.glGetUniformLocation(shaderID, nombre));

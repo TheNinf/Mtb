@@ -8,9 +8,7 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
-import graphics.framebuffer.Framebuffer;
 import graphics.postProcessingFX.bloom.Bloom;
-import graphics.postProcessingFX.godRays.GodRays;
 import main.Aplicacion;
 
 public final class PostProceso {
@@ -18,19 +16,15 @@ public final class PostProceso {
 	private static final float[] posiciones = { -1, 1, -1, -1, 1, 1, 1, -1 };
 	private static int vaoID;
 
-	// private static LensFlare lensFlare;
 	private static Bloom bloom;
-	private static GodRays godRays;
 
 	private PostProceso() {
 	}
 
 	public static final void iniciar() {
 		iniciarVAO();
-		// lensFlare = new LensFlare(Aplicacion.obtenerAncho(),
-		// Aplicacion.obtenerAncho());
+
 		bloom = new Bloom(Aplicacion.obtenerAncho(), Aplicacion.obtenerAlto());
-		godRays = new GodRays(Aplicacion.obtenerAncho(), Aplicacion.obtenerAlto());
 	}
 
 	private static final void iniciarVAO() {
@@ -51,21 +45,13 @@ public final class PostProceso {
 		GL30.glBindVertexArray(0);
 	}
 
-	public static final void renderizar(final Framebuffer srcFramebuffer) {
+	public static final void renderizar(final int textura, final int texturaBrillo) {
 		GL30.glBindVertexArray(vaoID);
 		GL20.glEnableVertexAttribArray(0);
 
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 
-		// lensFlare.render(srcFramebuffer.obtenerAttachment(GL30.GL_COLOR_ATTACHMENT0),
-		// srcFramebuffer.obtenerAttachment(GL30.GL_COLOR_ATTACHMENT1));
-
-		godRays.render(srcFramebuffer.obtenerAttachment(GL30.GL_COLOR_ATTACHMENT0),
-				srcFramebuffer.obtenerAttachment(GL30.GL_COLOR_ATTACHMENT2));
-		bloom.render(godRays.obtenerTextura(), srcFramebuffer.obtenerAttachment(GL30.GL_COLOR_ATTACHMENT1));
-		// bloom.render(godRays.obtenerTextura(),
-		// srcFramebuffer.obtenerAttachment(GL30.GL_COLOR_ATTACHMENT1));
-		// combinadorGodRays.render(godRays.obtenerTextura());
+		bloom.render(textura, texturaBrillo);
 
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 
