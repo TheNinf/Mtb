@@ -15,7 +15,7 @@ vec4 getColor(sampler2D textura) {
 }
 
 void main(void) {
-	color = getColor(textura) + getColor(texturaBrillo1) / 20.0f +
-		 getColor(texturaBrillo2) / 14.0f + getColor(texturaBrillo3) / 8.0f + 
-			getColor(texturaBrillo4) / 2.0f;
+	color = getColor(textura) + getColor(texturaBrillo1) / 12.0f +
+		 getColor(texturaBrillo2) / 8.0f + getColor(texturaBrillo3) / 4.0f + 
+			getColor(texturaBrillo4) / 1.75f;
 }

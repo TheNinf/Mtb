@@ -9,4 +9,5 @@ uniform samplerCube textura;
 
 void main(void) {
 	color = brightColor = texture(textura, textureCoords);
+	brightColor /= 1.4f;
 }

@@ -1,17 +1,15 @@
 1 -> Reescribir las matemáticas y añadir soporte para matrices 3x3 - Casi
 2 -> Reescribir la clase Framebuffer para añadir mejor soporte para multitargets 
 	y demás - Hecho
-16 -> Hacer otro renderizador para sombras optimizado.
+16 -> Hacer otro renderizador para sombras optimizado. - Hecho
 3 -> Reescribir el método renderizar de la clase PostProceso - Hecho
 4 -> ¿Instanced rendering con entidades con mismos modelos?
 5 -> Hacer de nuevo el texto para mejor calidad. 
 6 -> ¿Añadir una clase abtracta para los renderizadores 3D?
-9 -> Añadir "skybox".
-17 -> Mejorar godrays renderizando una esfera blanca donde está el sol (cuando esté la skybox). 
-	Render todo en negro menos eso.
+9 -> Añadir "skybox". - Hecho
 10 -> Hacer "bloom". - Hecho
-11 -> Hacer "god rays". - Hecho
 12 -> Hacer terreno.
+29 -> Luces.
 13 -> Mejorar el modelo "mtb" añadiendo el brillo del modelo, texture atlas...
 	Por ello, hacer un programa editor de modelos
 15 -> Una vez hecho los gráficos base, empezar a decorar el mundo. Para ello

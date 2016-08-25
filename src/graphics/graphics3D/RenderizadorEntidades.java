@@ -25,7 +25,9 @@ import utils.PoolObjeto;
 public class RenderizadorEntidades {
 	// TODO hacer qye solocse rendericen con normal map entidades cercanas
 	private static final float CERCA = 0.1f, LEJOS = 1000.0f;
-	private static final float DISTANCIA_RENDER_NORMAL_MAP_CUADRADO = 60 * 60;
+	private static final float DISTANCIA_RENDER_NORMAL_MAP = 60.0f;
+	private static final float DISTANCIA_RENDER_NORMAL_MAP_CUADRADO = DISTANCIA_RENDER_NORMAL_MAP
+			* DISTANCIA_RENDER_NORMAL_MAP;
 
 	private final HashMap<Modelo, ArrayList<Entidad>> entidades;
 	private final Shader shaderEntidades;
@@ -67,6 +69,8 @@ public class RenderizadorEntidades {
 		/********** ESCENA NORMAL ***********/
 		GL11.glCullFace(GL11.GL_BACK);
 		framebuffer.enlazar();
+		r.render();
+
 		shaderEntidades.enlazar();
 		shaderEntidades.uniformMatrix4("lightSpaceMatrix", renderizadorSombras.matrizEspacioLuz);
 		shaderEntidades.uniformMatrix4("viewMatrix", Transform.obtenerViewMatrix());
@@ -124,8 +128,6 @@ public class RenderizadorEntidades {
 		PoolObjeto.VECTOR3.devolver(vectorReusable);
 		PoolObjeto.VECTOR3.devolver(ejes);
 		shaderEntidades.desenlazar();
-
-		r.render();
 
 		framebuffer.desenlazar();
 

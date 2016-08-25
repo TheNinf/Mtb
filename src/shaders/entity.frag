@@ -62,10 +62,6 @@ void main(void){
 		vec3 unitCamVector = normalize(toCameraVector - fragmentPosition);
 		vec3 halfwayDirection = normalize(-lightDirection + unitCamVector);
 		float specular = pow(dot(unitNormal, halfwayDirection), shininess) * specularFactor; 
-	
-		//vec3 unitCamVector = normalize(toCameraVector);
-		//vec3 reflectedLightDirection = reflect(lightDirection, unitNormal);
-		//float specularFactor = dot(reflectedLightDire
 
 		vec3 finalColor = (textureColor.rgb + specular) * diffuse;
 		color = vec4(finalColor, textureColor.a);

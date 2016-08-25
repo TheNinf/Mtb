@@ -7,7 +7,7 @@ import utils.PoolObjeto;
 
 public final class Transform {
 
-	private static Matrix4 matrizProyeccion, matrizOrtografica, viewMatrix, skyboxViewMatrix;
+	private static Matrix4 matrizProyeccion, matrizOrtografica, viewMatrix;
 
 	private Transform() {
 	}
@@ -24,11 +24,6 @@ public final class Transform {
 		// Matrix4.rotar(rotacion.z, vectorReusable.set(0, 0, 1), matriz);
 		PoolObjeto.VECTOR3.devolver(vectorReusable);
 		viewMatrix = matriz;
-
-		// TODO CAMBIAR
-		final Matrix4 matrizSkybox = new Matrix4(1.0f);
-		Matrix4.rotar(rotacion.y, vectorReusable.set(0, 1, 0), matrizSkybox);
-		skyboxViewMatrix = matrizSkybox;
 	}
 
 	public static final void setMatrizProyeccion(final Matrix4 proyeccion) {
@@ -49,9 +44,5 @@ public final class Transform {
 
 	public static final Matrix4 obtenerOrthoMatrix() {
 		return matrizOrtografica;
-	}
-
-	public static final Matrix4 obtenerSkyboxViewMatrix() {
-		return skyboxViewMatrix;
 	}
 }
