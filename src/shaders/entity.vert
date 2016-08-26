@@ -10,7 +10,6 @@ uniform mat4 projectionMatrix;
 uniform mat4 transformationMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 lightSpaceMatrix;
-uniform float shouldUseNormalMap;
 
 out vec2 textureCoords;
 out vec3 fragmentPosition;
@@ -18,7 +17,12 @@ out vec3 toCameraVector;
 out vec3 lightDirection;
 out vec4 worldPositionLightSpace;
 out vec3 normal;
-out float out_shouldUseNormalMap;
+out float shouldUseNormalMap;
+out float visibility;
+
+const float density = 0.0065f;
+const float gradient = 1.64f;
+const float distance_render_normal_map = 65.0f;
 
 void main(void){
 	vec4 worldPosition = transformationMatrix * vec4(position, 1);
@@ -26,7 +30,9 @@ void main(void){
 	gl_Position = projectionMatrix * positionRelativeToCamera;
 	textureCoords = textCoords;
 
-	if(shouldUseNormalMap < 0.5f) {
+	float distance = length(positionRelativeToCamera.xyz);
+	bool renderNormalMap = distance < distance_render_normal_map;
+	if(!renderNormalMap) {
 		toCameraVector = (inverse(viewMatrix) * vec4(0, 0, 0, 1)).xyz - worldPosition.xyz;
 		lightDirection = vec3(0f, 0f, -0.8f);
 		normal = (transformationMatrix *  vec4(normals, 0)).xyz;
@@ -43,10 +49,12 @@ void main(void){
 
 		toCameraVector = toTangentSpace * (inverse(viewMatrix) * vec4(0, 0, 0, 1)).xyz - worldPosition.xyz;
 		lightDirection = toTangentSpace * vec3(0f, 0f, -0.8f);
-
 	}
 	
-	out_shouldUseNormalMap = shouldUseNormalMap;
-	fragmentPosition = worldPosition.xyz;
+	visibility = exp(-pow((distance * density), gradient));
+	visibility = clamp(visibility, 0.0f, 1.0f);
+	
+	shouldUseNormalMap = renderNormalMap ? 1.0f : 0.0f;
+	fragmentPosition = positionRelativeToCamera.xyz;
 	worldPositionLightSpace = lightSpaceMatrix * worldPosition;
 }

@@ -9,7 +9,8 @@ in vec3 toCameraVector;
 in vec3 lightDirection;
 in vec4 worldPositionLightSpace;
 in vec3 normal;
-in float out_shouldUseNormalMap;
+in float shouldUseNormalMap;
+in float visibility;
 
 uniform sampler2D samplerTexture;
 uniform sampler2D specularTexture;
@@ -46,7 +47,7 @@ void main(void){
 	}
 	
 	vec3 unitNormal;
-	if(out_shouldUseNormalMap < 0.5f) {
+	if(shouldUseNormalMap == 0.0f) {
 		unitNormal = normalize(normal);
 	} else {
 		vec4 normalMapValue = 2.0f * texture(normalMap, textureCoords) - 1.0f;
@@ -56,19 +57,21 @@ void main(void){
 	float shadow = shadowCalculation(worldPositionLightSpace);
 	float diffuse = max(dot(unitNormal, -lightDirection) * shadow, minDiffuse);
 
-	float specularFactor = shininess > 0.0f ? 
+	bool hasSpecular = shininess > 0.0f;
+	float specularFactor = hasSpecular ? 
 		texture(specularTexture, textureCoords).r : 0.0f;
-	if(shininess > 0.0f && specularFactor > 0.0f) {
+	if(hasSpecular && specularFactor > 0.0f) {
 		vec3 unitCamVector = normalize(toCameraVector - fragmentPosition);
 		vec3 halfwayDirection = normalize(-lightDirection + unitCamVector);
 		float specular = pow(dot(unitNormal, halfwayDirection), shininess) * specularFactor; 
 
 		vec3 finalColor = (textureColor.rgb + specular) * diffuse;
 		color = vec4(finalColor, textureColor.a);
-		brightColor = diffuse > minDiffuse ? color : vec4(0);
+		brightColor = diffuse > minDiffuse ? color * visibility : vec4(0);
 	} else {
 		brightColor = vec4(0);
 		color.rgb = diffuse * textureColor.xyz;
 		color.a = textureColor.a;
 	}		
+	color = mix(vec4(0.0f, 0.4f, 0.7f, 1.0f), color, visibility);
 }

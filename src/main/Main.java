@@ -41,7 +41,7 @@ public class Main extends Aplicacion {
 		renderizador = new RenderizadorEntidades();
 		final Modelo modelo = new Modelo(m.obtenerVertices(), m.obtenerNormals(), m.obtenerTextureCoords(),
 				m.obtenerTangentes(), m.obtenerBitangentes(), m.obtenerIndices(),
-				new Textura("src/crate.png", Textura.TIPO.TEXTURA_3D)).ponerBrillo(9)
+				new Textura("src/crate.png", Textura.TIPO.TEXTURA_3D)).ponerBrillo(17)
 						.ponerTexturaReflejo(new Textura("src/crateSpecular.png", Textura.TIPO.TEXTURA_3D))
 						.ponerNormalMap(new Textura("src/crateNormalMap.png", Textura.TIPO.TEXTURA_3D));
 

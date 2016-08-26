@@ -25,9 +25,10 @@ import utils.PoolObjeto;
 public class RenderizadorEntidades {
 	// TODO hacer qye solocse rendericen con normal map entidades cercanas
 	private static final float CERCA = 0.1f, LEJOS = 1000.0f;
-	private static final float DISTANCIA_RENDER_NORMAL_MAP = 60.0f;
+	private static final float DISTANCIA_RENDER_NORMAL_MAP = 63.0f;
 	private static final float DISTANCIA_RENDER_NORMAL_MAP_CUADRADO = DISTANCIA_RENDER_NORMAL_MAP
 			* DISTANCIA_RENDER_NORMAL_MAP;
+	private static final float MAX_INDICES = 1048576.0f;
 
 	private final HashMap<Modelo, ArrayList<Entidad>> entidades;
 	private final Shader shaderEntidades;
@@ -69,7 +70,6 @@ public class RenderizadorEntidades {
 		/********** ESCENA NORMAL ***********/
 		GL11.glCullFace(GL11.GL_BACK);
 		framebuffer.enlazar();
-		r.render();
 
 		shaderEntidades.enlazar();
 		shaderEntidades.uniformMatrix4("lightSpaceMatrix", renderizadorSombras.matrizEspacioLuz);
@@ -109,7 +109,7 @@ public class RenderizadorEntidades {
 				shaderEntidades.uniformBoolean("shouldUseNormalMap",
 						camara.posicion.distanciaCuadrado(entidad.posicion) < DISTANCIA_RENDER_NORMAL_MAP_CUADRADO);
 
-				if (numeroIndices < GL12.GL_MAX_ELEMENTS_INDICES)
+				if (numeroIndices < MAX_INDICES)
 					GL12.glDrawRangeElements(GL11.GL_TRIANGLES, 0, numeroIndices, numeroIndices, GL11.GL_UNSIGNED_INT,
 							0);
 				else
@@ -128,7 +128,7 @@ public class RenderizadorEntidades {
 		PoolObjeto.VECTOR3.devolver(vectorReusable);
 		PoolObjeto.VECTOR3.devolver(ejes);
 		shaderEntidades.desenlazar();
-
+		r.render();
 		framebuffer.desenlazar();
 
 		GL11.glDisable(GL11.GL_DEPTH_TEST);

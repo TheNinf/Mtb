@@ -2,7 +2,6 @@ package graphics.graphics3D;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL30;
 
 import graphics.Shader;
 import graphics.Textura;
@@ -32,7 +31,6 @@ public class RenderizadorSkybox {
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		textura.enlazar();
 		GL11.glDrawArrays(GL11.GL_POINTS, 0, 1);
-		GL30.glBindVertexArray(0);
 		shader.desenlazar();
 
 		GL11.glDepthFunc(GL11.GL_LESS);
