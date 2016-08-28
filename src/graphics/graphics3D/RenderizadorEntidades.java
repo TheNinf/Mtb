@@ -17,17 +17,15 @@ import entity.Modelo;
 import graphics.Shader;
 import graphics.Transform;
 import graphics.framebuffer.Framebuffer;
-import main.Aplicacion;
+import graphics.graphics3D.particles.ControladorParticulas;
+import main.Juego;
 import maths.Matrix4;
 import maths.Vector3;
-import utils.PoolObjeto;
+import utils.PoolObjetos;
 
 public class RenderizadorEntidades {
 	// TODO hacer qye solocse rendericen con normal map entidades cercanas
 	private static final float CERCA = 0.1f, LEJOS = 1000.0f;
-	private static final float DISTANCIA_RENDER_NORMAL_MAP = 63.0f;
-	private static final float DISTANCIA_RENDER_NORMAL_MAP_CUADRADO = DISTANCIA_RENDER_NORMAL_MAP
-			* DISTANCIA_RENDER_NORMAL_MAP;
 	private static final float MAX_INDICES = 1048576.0f;
 
 	private final HashMap<Modelo, ArrayList<Entidad>> entidades;
@@ -45,8 +43,7 @@ public class RenderizadorEntidades {
 
 		entidades = new HashMap<>();
 		shaderEntidades = new Shader("src/shaders/entity.vert", "src/shaders/entity.frag");
-		framebuffer = new Framebuffer(Aplicacion.obtenerAncho(), Aplicacion.obtenerAlto(),
-				Framebuffer.TIPO.DEPTH_Y_TEXTURAS, 2);
+		framebuffer = new Framebuffer(Juego.obtenerAncho(), Juego.obtenerAlto(), Framebuffer.TIPO.DEPTH_Y_TEXTURAS, 2);
 
 		shaderEntidades.enlazar();
 		shaderEntidades.uniformMatrix4("projectionMatrix", Transform.obtenerMatrizProyeccion());
@@ -60,8 +57,8 @@ public class RenderizadorEntidades {
 	public final void mostrar(final Camara camara) {
 		/***** INICIACION ********/
 		Transform.setViewMatrices(camara);
-		final Vector3 vectorReusable = PoolObjeto.VECTOR3.solicitar();
-		final Vector3 ejes = PoolObjeto.VECTOR3.solicitar();
+		final Vector3 vectorReusable = PoolObjetos.VECTOR3.solicitar();
+		final Vector3 ejes = PoolObjetos.VECTOR3.solicitar();
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 
@@ -74,6 +71,7 @@ public class RenderizadorEntidades {
 		shaderEntidades.enlazar();
 		shaderEntidades.uniformMatrix4("lightSpaceMatrix", renderizadorSombras.matrizEspacioLuz);
 		shaderEntidades.uniformMatrix4("viewMatrix", Transform.obtenerViewMatrix());
+		shaderEntidades.uniformMatrix4("invertedViewMatrix", Transform.obtenerInvertedViewMatrix());
 
 		GL13.glActiveTexture(GL13.GL_TEXTURE3);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, renderizadorSombras.framebufferSombras.obtenerDepth());
@@ -106,8 +104,6 @@ public class RenderizadorEntidades {
 				vectorReusable.set(escalado, escalado, escalado);
 				Matrix4.escalar(vectorReusable, transformationMatrix);
 				shaderEntidades.uniformMatrix4("transformationMatrix", transformationMatrix);
-				shaderEntidades.uniformBoolean("shouldUseNormalMap",
-						camara.posicion.distanciaCuadrado(entidad.posicion) < DISTANCIA_RENDER_NORMAL_MAP_CUADRADO);
 
 				if (numeroIndices < MAX_INDICES)
 					GL12.glDrawRangeElements(GL11.GL_TRIANGLES, 0, numeroIndices, numeroIndices, GL11.GL_UNSIGNED_INT,
@@ -125,14 +121,16 @@ public class RenderizadorEntidades {
 		}
 
 		/****** CIERRE **********/
-		PoolObjeto.VECTOR3.devolver(vectorReusable);
-		PoolObjeto.VECTOR3.devolver(ejes);
+		PoolObjetos.VECTOR3.devolver(vectorReusable);
+		PoolObjetos.VECTOR3.devolver(ejes);
 		shaderEntidades.desenlazar();
-		r.render();
-		framebuffer.desenlazar();
 
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glDisable(GL11.GL_CULL_FACE);
+		r.render();
+
+		ControladorParticulas.dibujar(camara);
+		framebuffer.desenlazar();
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
 	}
 
 	public final void agregar(final Entidad entidad) {
@@ -177,8 +175,8 @@ public class RenderizadorEntidades {
 					null);
 			shadowShader.uniformMatrix4("lightSpaceMatrix", matrizEspacioLuz);
 
-			final Vector3 vectorReusable = PoolObjeto.VECTOR3.solicitar();
-			final Vector3 ejes = PoolObjeto.VECTOR3.solicitar();
+			final Vector3 vectorReusable = PoolObjetos.VECTOR3.solicitar();
+			final Vector3 ejes = PoolObjetos.VECTOR3.solicitar();
 
 			for (final Modelo modelo : entidades.keySet()) {
 				final int numeroIndices = modelo.obtenerNumeroIndices();
@@ -207,8 +205,8 @@ public class RenderizadorEntidades {
 				GL30.glBindVertexArray(0);
 			}
 
-			PoolObjeto.VECTOR3.devolver(vectorReusable);
-			PoolObjeto.VECTOR3.devolver(ejes);
+			PoolObjetos.VECTOR3.devolver(vectorReusable);
+			PoolObjetos.VECTOR3.devolver(ejes);
 
 			shadowShader.desenlazar();
 			framebufferSombras.desenlazar();
@@ -219,9 +217,9 @@ public class RenderizadorEntidades {
 
 			final Matrix4 matriz = new Matrix4();
 
-			final Vector3 UP = PoolObjeto.VECTOR3.solicitar().set(0, 1, 0);
+			final Vector3 UP = PoolObjetos.VECTOR3.solicitar().set(0, 1, 0);
 			final Vector3 xAxis = Vector3.cross(UP, direccion).normalizar();
-			PoolObjeto.VECTOR3.devolver(UP);
+			PoolObjetos.VECTOR3.devolver(UP);
 
 			final Vector3 yAxis = Vector3.cross(direccion, xAxis).normalizar();
 

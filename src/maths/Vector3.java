@@ -8,6 +8,10 @@ public class Vector3 {
 		set(x, y, z);
 	}
 
+	public Vector3(final Vector3 vector) {
+		set(vector.x, vector.y, vector.z);
+	}
+
 	public Vector3() {
 		set(0, 0, 0);
 	}
@@ -41,8 +45,9 @@ public class Vector3 {
 		set(x * numero, y * numero, z * numero);
 	}
 
-	public final void negar() {
+	public final Vector3 negar() {
 		set(-x, -y, -z);
+		return this;
 	}
 
 	public final Vector3 normalizar() {
@@ -63,7 +68,10 @@ public class Vector3 {
 	}
 
 	public final float distanciaCuadrado(final Vector3 otro) {
-		return (float) (Math.pow(x - otro.x, 2) + Math.pow(y - otro.y, 2) + Math.pow(z - otro.z, 2));
+		final float x = this.x - otro.x;
+		final float y = this.y - otro.y;
+		final float z = this.z - otro.z;
+		return x * x + y * y + z * z;
 	}
 
 	public final float distancia(final Vector3 otro) {

@@ -3,32 +3,24 @@ package utils;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import maths.Matrix4;
 import maths.Vector3;
 
-public abstract class PoolObjeto<G> {
+public abstract class PoolObjetos<G> {
 
-	private static final ArrayList<PoolObjeto<? extends Object>> pools = new ArrayList<>();
+	private static final ArrayList<PoolObjetos<? extends Object>> pools = new ArrayList<>();
 	private static final short tiempoExpiracion = 6000;
 
-	public static final PoolObjeto<Vector3> VECTOR3 = new PoolObjeto<Vector3>() {
+	public static final PoolObjetos<Vector3> VECTOR3 = new PoolObjetos<Vector3>() {
 		@Override
-		public Vector3 obtenerObjeto() {
+		protected Vector3 obtenerObjeto() {
 			return new Vector3();
-		}
-	};
-
-	public static final PoolObjeto<Matrix4> MATRIX4 = new PoolObjeto<Matrix4>() {
-		@Override
-		public Matrix4 obtenerObjeto() {
-			return new Matrix4();
 		}
 	};
 
 	private final HashMap<G, Long> disponibles;
 	private final ArrayList<G> bloqueados;
 
-	public PoolObjeto() {
+	private PoolObjetos() {
 		disponibles = new HashMap<>();
 		bloqueados = new ArrayList<>();
 
@@ -36,7 +28,7 @@ public abstract class PoolObjeto<G> {
 	}
 
 	public static final void actualizarPools() {
-		for (final PoolObjeto<? extends Object> pool : pools)
+		for (final PoolObjetos<? extends Object> pool : pools)
 			pool.actualizar();
 	}
 
@@ -63,6 +55,7 @@ public abstract class PoolObjeto<G> {
 			if (ahora - tiempo >= tiempoExpiracion)
 				disponibles.remove(objeto);
 		}
+		System.out.println(this + ", " + disponibles.keySet().size());
 	}
 
 	protected abstract G obtenerObjeto();

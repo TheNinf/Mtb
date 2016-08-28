@@ -16,7 +16,6 @@ uniform sampler2D samplerTexture;
 uniform sampler2D specularTexture;
 uniform sampler2D normalMap;
 uniform sampler2DShadow shadowMap;
-
 uniform float shininess;
 
 const float minDiffuse = 0.4f;
@@ -46,13 +45,8 @@ void main(void){
 		return;
 	}
 	
-	vec3 unitNormal;
-	if(shouldUseNormalMap == 0.0f) {
-		unitNormal = normalize(normal);
-	} else {
-		vec4 normalMapValue = 2.0f * texture(normalMap, textureCoords) - 1.0f;
-		unitNormal = normalize(normalMapValue.rgb);
-	}
+	vec3 unitNormal = shouldUseNormalMap == 0.0f ? normalize(normal) :
+		normalize((2.0f * texture(normalMap, textureCoords) - 1.0f).rgb); 
 
 	float shadow = shadowCalculation(worldPositionLightSpace);
 	float diffuse = max(dot(unitNormal, -lightDirection) * shadow, minDiffuse);
@@ -70,7 +64,7 @@ void main(void){
 		brightColor = diffuse > minDiffuse ? color * visibility : vec4(0);
 	} else {
 		brightColor = vec4(0);
-		color.rgb = diffuse * textureColor.xyz;
+		color.rgb = diffuse * textureColor.rgb;
 		color.a = textureColor.a;
 	}		
 	color = mix(vec4(0.0f, 0.4f, 0.7f, 1.0f), color, visibility);

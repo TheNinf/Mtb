@@ -56,6 +56,7 @@ public class RenderizadorSprites extends Renderizador2D {
 
 	@Override
 	public void comenzar() {
+		buffer.clear();
 		spritesARenderizar = 0;
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, VBO);
 	}

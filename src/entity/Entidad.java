@@ -1,7 +1,7 @@
 package entity;
 
 import maths.Vector3;
-import utils.PoolObjeto;
+import utils.PoolObjetos;
 
 public class Entidad {
 
@@ -20,9 +20,9 @@ public class Entidad {
 	}
 
 	public void incrementarRot(float x, float y, float z) {
-		Vector3 rotAIncrementar = PoolObjeto.VECTOR3.solicitar().set(x, y, z);
+		Vector3 rotAIncrementar = PoolObjetos.VECTOR3.solicitar().set(x, y, z);
 		Vector3.sumar(rotacion, rotAIncrementar, rotacion);
-		PoolObjeto.VECTOR3.devolver(rotAIncrementar);
+		PoolObjetos.VECTOR3.devolver(rotAIncrementar);
 	}
 
 	public Modelo obtenerModelo() {

@@ -8,12 +8,12 @@ import graphics.postProcessingFX.gaussianBlur.GaussianBlur5;
 
 public final class Bloom {
 
-	private static final float ESCALADO1 = 5;
-	private static final float ESCALADO2 = 10;
-	private static final float ESCALADO3 = 20;
-	private static final float ESCALADO4 = 40;
+	private static final float ESCALADO1 = 10;
+	private static final float ESCALADO2 = 20;
+	private static final float ESCALADO3 = 40;
+	private static final float ESCALADO4 = 80;
 
-	private final Shader bloom;
+	private static Shader bloom;
 	private final GaussianBlur5 gaussianBlur1;
 	private final GaussianBlur5 gaussianBlur2;
 	private final GaussianBlur5 gaussianBlur3;

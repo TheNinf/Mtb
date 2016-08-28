@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
-import main.Aplicacion;
+import main.Juego;
 import utils.exceptions.FramebufferException;
 
 public class Framebuffer {
@@ -73,7 +73,7 @@ public class Framebuffer {
 	 */
 	public final void desenlazar() {
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
-		GL11.glViewport(0, 0, Aplicacion.obtenerAncho(), Aplicacion.obtenerAlto());
+		GL11.glViewport(0, 0, Juego.obtenerAncho(), Juego.obtenerAlto());
 	}
 
 	private final void crear(final TIPO tipo, final int numeroTexturas) {

@@ -6,7 +6,7 @@ import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
 
 import maths.Vector3;
-import utils.PoolObjeto;
+import utils.PoolObjetos;
 import utils.exceptions.WavDataException;
 
 public class Sonido {
@@ -35,10 +35,10 @@ public class Sonido {
 
 		AL10.alSourcei(source, AL10.AL_BUFFER, buffer);
 
-		final Vector3 posicionyvel = PoolObjeto.VECTOR3.solicitar();
+		final Vector3 posicionyvel = PoolObjetos.VECTOR3.solicitar();
 		ponerPosicionSonido(posicionyvel);
 		ponerVelocidadSonido(posicionyvel);
-		PoolObjeto.VECTOR3.devolver(posicionyvel);
+		PoolObjetos.VECTOR3.devolver(posicionyvel);
 
 		modeloDistancia = AL11.AL_EXPONENT_DISTANCE;
 		GestorSonidos.agregarSonido(this);

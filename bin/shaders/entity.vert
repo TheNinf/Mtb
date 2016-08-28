@@ -9,6 +9,7 @@ layout (location = 4) in vec3 bitangent;
 uniform mat4 projectionMatrix;
 uniform mat4 transformationMatrix;
 uniform mat4 viewMatrix;
+uniform mat4 invertedViewMatrix;
 uniform mat4 lightSpaceMatrix;
 
 out vec2 textureCoords;
@@ -20,8 +21,8 @@ out vec3 normal;
 out float shouldUseNormalMap;
 out float visibility;
 
-const float density = 0.006f;
-const float gradient = 1.75f;
+const float density = 0.0065f;
+const float gradient = 1.64f;
 const float distance_render_normal_map = 65.0f;
 
 void main(void){
@@ -33,7 +34,7 @@ void main(void){
 	float distance = length(positionRelativeToCamera.xyz);
 	bool renderNormalMap = distance < distance_render_normal_map;
 	if(!renderNormalMap) {
-		toCameraVector = (inverse(viewMatrix) * vec4(0, 0, 0, 1)).xyz - worldPosition.xyz;
+		toCameraVector = (invertedViewMatrix * vec4(0, 0, 0, 1)).xyz - worldPosition.xyz;
 		lightDirection = vec3(0f, 0f, -0.8f);
 		normal = (transformationMatrix *  vec4(normals, 0)).xyz;
 	} else {
@@ -47,7 +48,7 @@ void main(void){
 			tang.z, bitang.z, normal.z
 		);
 
-		toCameraVector = toTangentSpace * (inverse(viewMatrix) * vec4(0, 0, 0, 1)).xyz - worldPosition.xyz;
+		toCameraVector = toTangentSpace * (invertedViewMatrix * vec4(0, 0, 0, 1)).xyz - worldPosition.xyz;
 		lightDirection = toTangentSpace * vec3(0f, 0f, -0.8f);
 	}
 	

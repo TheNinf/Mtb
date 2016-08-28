@@ -9,7 +9,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 import graphics.postProcessingFX.bloom.Bloom;
-import main.Aplicacion;
+import main.Juego;
 
 public final class PostProceso {
 
@@ -24,7 +24,7 @@ public final class PostProceso {
 	public static final void iniciar() {
 		iniciarVAO();
 
-		bloom = new Bloom(Aplicacion.obtenerAncho(), Aplicacion.obtenerAlto());
+		bloom = new Bloom(Juego.obtenerAncho(), Juego.obtenerAlto());
 	}
 
 	private static final void iniciarVAO() {

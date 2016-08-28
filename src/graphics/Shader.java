@@ -1,8 +1,10 @@
 package graphics;
 
+import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
@@ -21,55 +23,47 @@ public class Shader {
 	public Shader(final String vShader, final String fShader) {
 		shaderID = leerShader(vShader, fShader);
 		variables = new HashMap<>();
+
+		obtenerVariablesUniformes();
 	}
 
 	public Shader(final String vShader, final String gShader, final String fShader) {
 		shaderID = leerShader(vShader, gShader, fShader);
 		variables = new HashMap<>();
+
+		obtenerVariablesUniformes();
 	}
 
 	public final void uniformMatrix4(final String nombre, final Matrix4 matriz) {
-		comprobarVariable(nombre);
 		GL20.glUniformMatrix4fv(variables.get(nombre), false, matriz.elementos);
 	}
 
 	public final void uniformVector3(final String nombre, final Vector3 vector) {
-		comprobarVariable(nombre);
 		GL20.glUniform3f(variables.get(nombre), vector.x, vector.y, vector.z);
 	}
 
 	public final void uniformVector2(final String nombre, final Vector2 vector) {
-		comprobarVariable(nombre);
 		GL20.glUniform2f(variables.get(nombre), vector.x, vector.y);
 	}
 
 	public final void uniformInt(final String nombre, final int valor) {
-		comprobarVariable(nombre);
 		GL20.glUniform1i(variables.get(nombre), valor);
 	}
 
 	public final void uniformArrayInt(final String nombre, final int[] valores) {
-		comprobarVariable(nombre);
 		GL20.glUniform1iv(variables.get(nombre), valores);
 	}
 
 	public final void uniformFloat(final String nombre, final float valor) {
-		comprobarVariable(nombre);
 		GL20.glUniform1f(variables.get(nombre), valor);
 	}
 
 	public final void uniformMatrix3(final String nombre, final float[] valores) {
-		comprobarVariable(nombre);
 		GL20.glUniformMatrix3fv(variables.get(nombre), false, valores);
 	}
 
 	public final void uniformBoolean(final String nombre, final boolean valor) {
 		uniformFloat(nombre, valor ? GL11.GL_TRUE : GL11.GL_FALSE);
-	}
-
-	private final void comprobarVariable(final String nombre) {
-		if (!variables.containsKey(nombre))
-			variables.put(nombre, GL20.glGetUniformLocation(shaderID, nombre));
 	}
 
 	public final void enlazar() {
@@ -78,6 +72,21 @@ public class Shader {
 
 	public final void desenlazar() {
 		GL20.glUseProgram(0);
+	}
+
+	// MIRAR ESTO;
+	private final void obtenerVariablesUniformes() {
+		enlazar();
+		final int cuenta = GL20.glGetProgrami(shaderID, GL20.GL_ACTIVE_UNIFORMS);
+		int longitud = GL20.glGetProgrami(shaderID, GL20.GL_ACTIVE_UNIFORM_MAX_LENGTH);
+
+		final IntBuffer tipo = BufferUtils.createIntBuffer(1);
+		final IntBuffer tam = BufferUtils.createIntBuffer(1);
+		for (int i = 0; i < cuenta; i++) {
+			final String nombre = GL20.glGetActiveUniform(shaderID, i, longitud, tam, tipo);
+			variables.put(nombre, GL20.glGetUniformLocation(shaderID, nombre));
+		}
+		desenlazar();
 	}
 
 	private final int leerShader(final String vShader, final String fShader) {

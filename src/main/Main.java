@@ -2,6 +2,7 @@ package main;
 
 import java.util.Random;
 
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL30;
 
 import audio.GestorSonidos;
@@ -12,27 +13,33 @@ import graphics.Shader;
 import graphics.Textura;
 import graphics.framebuffer.Framebuffer;
 import graphics.graphics3D.RenderizadorEntidades;
+import graphics.graphics3D.particles.ControladorParticulas;
+import graphics.graphics3D.particles.TexturaParticula;
 import graphics.layer.CapaTiles;
 import graphics.postProcessingFX.PostProceso;
 import loader3D.LectorArchivosMTB;
 import loader3D.ModeloMTB;
 import maths.Vector3;
 
-public class Main extends Aplicacion {
+public class Main extends Juego {
 
 	private final CapaTiles capa;
 	private final Camara camara;
 	RenderizadorEntidades renderizador;
 	Entidad entidad;
+	TexturaParticula tex;
+	TexturaParticula tex2;
 
 	protected Main() {
+		tex = new TexturaParticula("src/particleStar.png", 1, true);
+		tex2 = new TexturaParticula("src/particleStar.png", 1, false);
 		Shader shader = new Shader("src/shaders/sprite.vert", "src/shaders/sprite.geom", "src/shaders/sprite.frag");
 		// Shader shader = new Shader("src/shaders/basic.vert",
 		// "src/shaders/basic.frag");
 		capa = new CapaTiles(shader);
 		shader.enlazar();
 		int[] texIDS = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-		shader.uniformArrayInt("textures", texIDS);
+		shader.uniformArrayInt("textures[0]", texIDS);
 		shader.desenlazar();
 
 		// capa.agregar(label);
@@ -66,10 +73,12 @@ public class Main extends Aplicacion {
 		}
 		GestorSonidos.obtener("test").sonar();
 		camara = new Camara(new Vector3());
+		ControladorParticulas.iniciar();
 	}
 
 	public static void main(String[] args) {
 		final Main juego = new Main();
+		// juego.sincronizacionVertical(true);
 		juego.correr();
 		juego.cerrar();
 	}
@@ -96,12 +105,18 @@ public class Main extends Aplicacion {
 		camara.actualizar();
 		renderizador.mostrar(camara);
 
+		if (Juego.estaTeclaPulsada(GLFW.GLFW_KEY_P)) {
+			Random r = new Random();
+			ControladorParticulas.agregarParticula(r.nextBoolean() ? tex : tex2, new Vector3(camara.posicion),
+					new Vector3(0, 1, 0), 45, 1, 20f, -0.05f);
+		}
+
 		Framebuffer b = renderizador.obtenerFramebuffer();
 		PostProceso.renderizar(b.obtenerAttachment(GL30.GL_COLOR_ATTACHMENT0),
 				b.obtenerAttachment(GL30.GL_COLOR_ATTACHMENT1));
-		capa.iniciar();
-		capa.render();
-		capa.terminar();
+		// capa.iniciar();
+		// capa.render();
+		// capa.terminar();
 	}
 
 }

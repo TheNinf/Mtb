@@ -1,10 +1,12 @@
 package main;
 
+import org.lwjgl.glfw.GLFW;
+
 import audio.GestorOpenAL;
 import maths.Vector2;
-import utils.PoolObjeto;
+import utils.PoolObjetos;
 
-public abstract class Aplicacion {
+public abstract class Juego {
 
 	protected static Ventana ventana;
 	private long contador;
@@ -12,7 +14,10 @@ public abstract class Aplicacion {
 	protected short fps;
 	protected byte aps;
 
-	protected Aplicacion() {
+	private static double ultimoTiempo = 0.0f;
+	private static float delta;
+
+	protected Juego() {
 		iniciar();
 	}
 
@@ -34,6 +39,8 @@ public abstract class Aplicacion {
 		long inicioBucleR = 0;
 
 		while (!ventana.debeCerrarse()) {
+			Juego.delta = calcularDelta();
+
 			inicioBucleR = System.nanoTime();
 			tiempoTranscurrido = inicioBucleR - referenciaActualizacion;
 			referenciaActualizacion = inicioBucleR;
@@ -53,7 +60,7 @@ public abstract class Aplicacion {
 
 			if (System.nanoTime() - contador >= 1000000000L) {
 				tick();
-				PoolObjeto.actualizarPools();
+				PoolObjetos.actualizarPools();
 
 				contador = System.nanoTime();
 				this.fps = fps;
@@ -61,6 +68,13 @@ public abstract class Aplicacion {
 				fps = aps = 0;
 			}
 		}
+	}
+
+	private static final float calcularDelta() {
+		final double tiempo = GLFW.glfwGetTime();
+		final float delta = (float) (tiempo - ultimoTiempo);
+		ultimoTiempo = tiempo;
+		return delta;
 	}
 
 	public abstract void iniciar();
@@ -107,6 +121,14 @@ public abstract class Aplicacion {
 
 	public static final int obtenerAlto() {
 		return ventana.obtenerAlto();
+	}
+
+	public static final float obtenerDelta() {
+		return delta;
+	}
+
+	public static final float aplicarDelta(final float vel) {
+		return vel * delta;
 	}
 
 	public final void cerrar() {
