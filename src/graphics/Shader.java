@@ -97,14 +97,14 @@ public class Shader {
 		GL20.glShaderSource(vID, UtilidadesArchivo.leerArchivo(vShader));
 		GL20.glCompileShader(vID);
 		if (GL20.glGetShaderi(vID, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE) {
-			System.out.println(GL20.glGetShaderInfoLog(vID, 500));
+			System.out.println(GL20.glGetShaderInfoLog(vID, 500) + " vshader");
 			System.exit(-1);
 		}
 
 		GL20.glShaderSource(fID, UtilidadesArchivo.leerArchivo(fShader));
 		GL20.glCompileShader(fID);
 		if (GL20.glGetShaderi(fID, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE) {
-			System.out.println(GL20.glGetShaderInfoLog(fID, 500));
+			System.out.println(GL20.glGetShaderInfoLog(fID, 500) + " fshader");
 			System.exit(-1);
 		}
 
@@ -131,21 +131,21 @@ public class Shader {
 		GL20.glShaderSource(vID, UtilidadesArchivo.leerArchivo(vShader));
 		GL20.glCompileShader(vID);
 		if (GL20.glGetShaderi(vID, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE) {
-			System.out.println(GL20.glGetShaderInfoLog(vID, 500));
+			System.out.println(GL20.glGetShaderInfoLog(vID, 500) + " vshader");
 			System.exit(-1);
 		}
 
 		GL20.glShaderSource(gID, UtilidadesArchivo.leerArchivo(gShader));
 		GL20.glCompileShader(gID);
 		if (GL20.glGetShaderi(gID, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE) {
-			System.out.println(GL20.glGetShaderInfoLog(gID, 500));
+			System.out.println(GL20.glGetShaderInfoLog(gID, 500) + " gshader");
 			System.exit(-1);
 		}
 
 		GL20.glShaderSource(fID, UtilidadesArchivo.leerArchivo(fShader));
 		GL20.glCompileShader(fID);
 		if (GL20.glGetShaderi(fID, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE) {
-			System.out.println(GL20.glGetShaderInfoLog(fID, 500));
+			System.out.println(GL20.glGetShaderInfoLog(fID, 500) + " fshader");
 			System.exit(-1);
 		}
 

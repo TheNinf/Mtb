@@ -2,6 +2,7 @@ package utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import maths.Vector3;
 
@@ -17,8 +18,8 @@ public abstract class PoolObjetos<G> {
 		}
 	};
 
-	private final HashMap<G, Long> disponibles;
-	private final ArrayList<G> bloqueados;
+	private HashMap<G, Long> disponibles;
+	private ArrayList<G> bloqueados;
 
 	private PoolObjetos() {
 		disponibles = new HashMap<>();
@@ -50,12 +51,15 @@ public abstract class PoolObjetos<G> {
 	private final void actualizar() {
 		final long ahora = System.currentTimeMillis();
 
-		for (final G objeto : disponibles.keySet()) {
+		final Iterator<G> iterator = disponibles.keySet().iterator();
+		while (iterator.hasNext()) {
+			final G objeto = iterator.next();
 			final long tiempo = disponibles.get(objeto);
 			if (ahora - tiempo >= tiempoExpiracion)
 				disponibles.remove(objeto);
 		}
-		System.out.println(this + ", " + disponibles.keySet().size());
+
+		System.out.println(this + ", " + disponibles.size());
 	}
 
 	protected abstract G obtenerObjeto();

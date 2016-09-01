@@ -16,34 +16,35 @@ import utils.PoolObjetos;
 
 public class RenderizadorParticulas {
 
+	private static final int NUM_FLOATS = 16;
+	private static final int TAM_PARTICULA = NUM_FLOATS * 4;
+
 	private final int vaoID, vboID;
 	private final FloatBuffer buffer;
 
 	private Shader shader;
 
 	public RenderizadorParticulas() {
-		final int tamParticula = 64;
 		vaoID = GL30.glGenVertexArrays();
-		GL30.glBindVertexArray(vaoID);
-
 		vboID = GL15.glGenBuffers();
+
+		GL30.glBindVertexArray(vaoID);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, tamParticula * ControladorParticulas.MAX_PARTICULAS,
-				GL15.GL_DYNAMIC_DRAW);
+
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, TAM_PARTICULA * GestorParticulas.MAX_PARTICULAS, GL15.GL_DYNAMIC_DRAW);
 
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);
 		GL20.glEnableVertexAttribArray(2);
 		GL20.glEnableVertexAttribArray(3);
-		GL20.glVertexAttribPointer(0, 4, GL11.GL_FLOAT, false, tamParticula, 0);
-		GL20.glVertexAttribPointer(1, 4, GL11.GL_FLOAT, false, tamParticula, 16);
-		GL20.glVertexAttribPointer(2, 4, GL11.GL_FLOAT, false, tamParticula, 32);
-		GL20.glVertexAttribPointer(3, 4, GL11.GL_FLOAT, false, tamParticula, 48);
-
+		GL20.glVertexAttribPointer(0, 4, GL11.GL_FLOAT, false, TAM_PARTICULA, 0);
+		GL20.glVertexAttribPointer(1, 4, GL11.GL_FLOAT, false, TAM_PARTICULA, 16);
+		GL20.glVertexAttribPointer(2, 4, GL11.GL_FLOAT, false, TAM_PARTICULA, 32);
+		GL20.glVertexAttribPointer(3, 4, GL11.GL_FLOAT, false, TAM_PARTICULA, 48);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 		GL30.glBindVertexArray(0);
 
-		buffer = BufferUtils.createFloatBuffer(16 * ControladorParticulas.MAX_PARTICULAS);
+		buffer = BufferUtils.createFloatBuffer(NUM_FLOATS * GestorParticulas.MAX_PARTICULAS);
 
 		shader = new Shader("src/graphics/graphics3D/particles/particula.vert",
 				"src/graphics/graphics3D/particles/particula.geom", "src/graphics/graphics3D/particles/particula.frag");
@@ -53,11 +54,12 @@ public class RenderizadorParticulas {
 	}
 
 	public void render(final Particula[] particulas, final short numeroParticulas, final boolean additiveBlending) {
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, additiveBlending ? GL11.GL_ONE : GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glDepthMask(false);
-		shader.enlazar();
 
+		shader.enlazar();
 		final Vector3 eje = PoolObjetos.VECTOR3.solicitar().set(0, 0, 1);
 		final Vector3 escalado = PoolObjetos.VECTOR3.solicitar();
 
@@ -79,8 +81,10 @@ public class RenderizadorParticulas {
 		PoolObjetos.VECTOR3.devolver(escalado);
 
 		shader.desenlazar();
+
 		GL11.glDepthMask(true);
 		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
 	}
 
 	private final void comenzar() {

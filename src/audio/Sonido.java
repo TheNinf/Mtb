@@ -35,7 +35,7 @@ public class Sonido {
 
 		AL10.alSourcei(source, AL10.AL_BUFFER, buffer);
 
-		final Vector3 posicionyvel = PoolObjetos.VECTOR3.solicitar();
+		final Vector3 posicionyvel = PoolObjetos.VECTOR3.solicitar().set(0, 0, 0);
 		ponerPosicionSonido(posicionyvel);
 		ponerVelocidadSonido(posicionyvel);
 		PoolObjetos.VECTOR3.devolver(posicionyvel);

@@ -3,32 +3,33 @@ package graphics.graphics3D.particles;
 import entity.Camara;
 import maths.Vector3;
 
-public final class ControladorParticulas {
+public final class GestorParticulas {
 
 	public static final short MAX_PARTICULAS = 9000;
 	public static final short MITAD_PARTICULAS = MAX_PARTICULAS / 2;
 
-	private static volatile Particula[] particulasNBlend;
-	private static volatile Particula[] particulasABlend;
+	private static Particula[] particulasNBlend;
+	private static Particula[] particulasABlend;
 
-	private static volatile short PARTICULAS_VIVAS_NBLEND = 0;
-	private static volatile short PARTICULAS_VIVAS_ABLEND = 0;
+	private static short PARTICULAS_VIVAS_NBLEND = 0;
+	private static short PARTICULAS_VIVAS_ABLEND = 0;
 
 	private static RenderizadorParticulas renderizador;
 
-	private ControladorParticulas() {
+	private GestorParticulas() {
 	}
 
 	public static final void iniciar() {
-		particulasNBlend = new Particula[MITAD_PARTICULAS];
-		particulasABlend = new Particula[MITAD_PARTICULAS];
+		new Thread(() -> {
+			particulasNBlend = new Particula[MITAD_PARTICULAS];
+			particulasABlend = new Particula[MITAD_PARTICULAS];
+
+			for (short i = 0; i < MITAD_PARTICULAS; i++) {
+				particulasNBlend[i] = new Particula();
+				particulasABlend[i] = new Particula();
+			}
+		}).start();
 		renderizador = new RenderizadorParticulas();
-
-		for (short i = 0; i < MITAD_PARTICULAS; i++) {
-			particulasNBlend[i] = new Particula();
-			particulasABlend[i] = new Particula();
-		}
-
 	}
 
 	public static final void agregarParticula(final TexturaParticula textura, final Vector3 posicion,
@@ -99,6 +100,6 @@ public final class ControladorParticulas {
 			}
 		}
 
-		return 0;
+		return -1;
 	}
 }

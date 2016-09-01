@@ -25,7 +25,7 @@ public class Entidad {
 		PoolObjetos.VECTOR3.devolver(rotAIncrementar);
 	}
 
-	public Modelo obtenerModelo() {
+	public final Modelo obtenerModelo() {
 		return modelo;
 	}
 

@@ -24,7 +24,7 @@ public class GestorOpenAL {
 	}
 
 	public static final void iniciar() {
-		hiloOpenAL = Executors.newSingleThreadExecutor();
+		hiloOpenAL = Executors.newCachedThreadPool();
 		ejecutar(() -> iniciarOpenAL());
 
 		Sonido.iniciar(hiloOpenAL);

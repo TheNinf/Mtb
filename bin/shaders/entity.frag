@@ -4,7 +4,6 @@ layout (location = 0) out vec4 color;
 layout (location = 1) out vec4 brightColor;
 
 in vec2 textureCoords;
-in vec3 fragmentPosition;
 in vec3 toCameraVector;
 in vec3 lightDirection;
 in vec4 worldPositionLightSpace;
@@ -55,10 +54,10 @@ void main(void){
 	float specularFactor = hasSpecular ? 
 		texture(specularTexture, textureCoords).r : 0.0f;
 	if(hasSpecular && specularFactor > 0.0f) {
-		vec3 unitCamVector = normalize(toCameraVector - fragmentPosition);
-		vec3 halfwayDirection = normalize(-lightDirection + unitCamVector);
-		float specular = pow(dot(unitNormal, halfwayDirection), shininess) * specularFactor; 
-
+		vec3 unitCamVector = normalize(toCameraVector);
+		vec3 reflectedLight = reflect(-lightDirection, unitNormal);
+		float specular = pow(dot(reflectedLight, unitCamVector), shininess) * specularFactor;	
+	
 		vec3 finalColor = (textureColor.rgb + specular) * diffuse;
 		color = vec4(finalColor, textureColor.a);
 		brightColor = diffuse > minDiffuse ? color * visibility : vec4(0);

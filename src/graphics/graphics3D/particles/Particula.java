@@ -17,24 +17,9 @@ public class Particula {
 
 	private boolean muerta = true;
 
-	/*
-	 * public Particula(final Vector3 posicion, final Vector3 velocidad, final
-	 * float rotacion, final float escalado, final float tiempoVida, final float
-	 * gravedad) { this.posicion = posicion; this.velocidad = velocidad;
-	 * this.rotacion = rotacion; this.escalado = escalado; this.tiempoVida =
-	 * tiempoVida; this.gravedad = gravedad; }
-	 */
-
-	public Particula() {
-		textura = null;
-		posicion = null;
-		velocidad = null;
-		rotacion = escalado = tiempoVida = gravedad = 0.0f;
-	}
-
 	public final boolean actualizar(final Camara camara) {
 		if ((vidaActual += Juego.obtenerDelta()) > tiempoVida) {
-			ControladorParticulas.morir(this);
+			GestorParticulas.morir(this);
 			return (muerta = true);
 		}
 

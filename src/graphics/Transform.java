@@ -7,12 +7,12 @@ import utils.PoolObjetos;
 
 public final class Transform {
 
-	private static Matrix4 matrizProyeccion, matrizOrtografica, viewMatrix, invertedViewMatrix;
+	private static Matrix4 matrizProyeccion, matrizOrtografica, viewMatrix;
 
 	private Transform() {
 	}
 
-	public static final void setViewMatrices(final Camara camara) {
+	public static final void setViewMatrix(final Camara camara) {
 		final Vector3 posicion = camara.posicion;
 		final Vector3 rotacion = camara.rotacion;
 
@@ -22,11 +22,6 @@ public final class Transform {
 		Matrix4.rotar(rotacion.y, vectorReusable.set(0, 1, 0), view);
 		Matrix4.trasladar(vectorReusable.set(-posicion.x, -posicion.y, -posicion.z), view);
 		viewMatrix = view;
-
-		final Matrix4 invertedView = new Matrix4(1.0f);
-		Matrix4.rotar(-rotacion.y, vectorReusable.set(0, 1, 0), invertedView);
-		Matrix4.trasladar(posicion, invertedView);
-		invertedViewMatrix = invertedView;
 
 		PoolObjetos.VECTOR3.devolver(vectorReusable);
 	}
@@ -45,10 +40,6 @@ public final class Transform {
 
 	public static final Matrix4 obtenerViewMatrix() {
 		return viewMatrix;
-	}
-
-	public static final Matrix4 obtenerInvertedViewMatrix() {
-		return invertedViewMatrix;
 	}
 
 	public static final Matrix4 obtenerOrthoMatrix() {
